@@ -793,6 +793,13 @@ or project-runtime assumptions for uninspected repositories.
 - The bootstrap must be idempotent.
 - Project runtime must be derived from the real project, never guessed.
 - `READY` means bootstrap-ready, not operationally validated.
+- Any implementation change after a review invalidates that review. The exact
+  final implementation state must receive a fresh independent Reviewer
+  `ACCEPT` before the Lead may report the work as `DONE`.
+- Independent write workers must use separate Paseo worktrees by default. A
+  shared working tree is allowed only as an explicit fallback, must be reported
+  clearly, and Git history must not be reconstructed afterward to imply
+  isolation that did not actually occur.
 - Preflight, A-G, the bootstrap regression suite, live idempotency, and
   secret-safety checks form the Bootstrap V1 operational-validation gate.
 - Project-specific validation is separate, local to the adopting repository,
