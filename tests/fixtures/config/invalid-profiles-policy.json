@@ -1,0 +1,11 @@
+{
+  "version": "0.2",
+  "profiles": [
+    {
+      "id": "design-agent-lead-v02",
+      "name": "Lead",
+      "preferredProvider": "codex-lead",
+      "notes": "invalid because allowedProviders is absent"
+    }
+  ]
+}

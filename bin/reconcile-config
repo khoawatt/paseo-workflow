@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+umask 077
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROVIDERS_POLICY="${PASEO_WORKFLOW_PROVIDERS_POLICY:-$ROOT_DIR/policy/providers.json}"
+PROFILES_POLICY="${PASEO_WORKFLOW_PROFILES_POLICY:-$ROOT_DIR/policy/profiles.json}"
+FILTER="$ROOT_DIR/lib/reconcile-config.jq"
+
+input_path=''
+empty_input=false
+output_path=''
+codex_models=''
+opencode_models=''
+
+usage() {
+  printf '%s\n' \
+    'Usage: bin/reconcile-config (--input PATH | --empty) --output PATH' \
+    '       --codex-models PATH --opencode-models PATH' >&2
+  exit 2
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --input)
+      [[ $# -ge 2 ]] || usage
+      input_path="$2"
+      shift 2
+      ;;
+    --empty)
+      empty_input=true
+      shift
+      ;;
+    --output)
+      [[ $# -ge 2 ]] || usage
+      output_path="$2"
+      shift 2
+      ;;
+    --codex-models)
+      [[ $# -ge 2 ]] || usage
+      codex_models="$2"
+      shift 2
+      ;;
+    --opencode-models)
+      [[ $# -ge 2 ]] || usage
+      opencode_models="$2"
+      shift 2
+      ;;
+    *) usage ;;
+  esac
+done
+
+[[ -n "$output_path" && -n "$codex_models" && -n "$opencode_models" ]] || usage
+if [[ "$empty_input" == true && -n "$input_path" ]]; then usage; fi
+if [[ "$empty_input" == false && -z "$input_path" ]]; then usage; fi
+
+for json_file in "$PROVIDERS_POLICY" "$PROFILES_POLICY" "$codex_models" "$opencode_models"; do
+  [[ -f "$json_file" ]] || { printf 'required JSON missing: %s\n' "$json_file" >&2; exit 2; }
+  jq -e . "$json_file" >/dev/null || { printf 'invalid JSON: %s\n' "$json_file" >&2; exit 2; }
+done
+
+jq -e '
+  type == "object"
+  and (keys == ["codex-lead", "codex-worker", "opencode-worker"])
+  and .["codex-lead"].extends == "codex"
+  and .["codex-worker"].paseoTools.enabled == false
+  and .["opencode-worker"].paseoTools.enabled == false
+' "$PROVIDERS_POLICY" >/dev/null || {
+  printf 'invalid providers policy\n' >&2
+  exit 2
+}
+
+jq -e '
+  .version == "0.2"
+  and (.profiles | type == "array" and length == 5)
+  and all(.profiles[];
+    (.id | type == "string" and length > 0)
+    and (.name | type == "string" and length > 0)
+    and (.notes | type == "string" and length > 0)
+    and (.allowedProviders | type == "array" and length > 0)
+  )
+' "$PROFILES_POLICY" >/dev/null || {
+  printf 'invalid profiles policy\n' >&2
+  exit 2
+}
+
+if [[ "$empty_input" == true ]]; then
+  input_file="$(mktemp "${TMPDIR:-/tmp}/paseo-empty-config.XXXXXX")"
+  printf '{}\n' >"$input_file"
+  remove_input=true
+else
+  [[ -f "$input_path" ]] || { printf 'input config missing: %s\n' "$input_path" >&2; exit 2; }
+  jq -e . "$input_path" >/dev/null || { printf 'invalid input config\n' >&2; exit 2; }
+  input_file="$input_path"
+  remove_input=false
+fi
+
+result_file="$(mktemp "${TMPDIR:-/tmp}/paseo-reconcile-result.XXXXXX")"
+normalized_input="$(mktemp "${TMPDIR:-/tmp}/paseo-reconcile-input.XXXXXX")"
+output_dir="$(dirname "$output_path")"
+mkdir -p "$output_dir"
+output_temp="$(mktemp "$output_dir/.paseo-config.XXXXXX")"
+
+cleanup() {
+  rm -f "$result_file" "$normalized_input" "$output_temp"
+  if [[ "$remove_input" == true ]]; then rm -f "$input_file"; fi
+}
+trap cleanup EXIT
+
+jq -S . "$input_file" >"$normalized_input"
+
+jq -n \
+  --slurpfile input_config "$input_file" \
+  --slurpfile provider_policy "$PROVIDERS_POLICY" \
+  --slurpfile profiles_policy "$PROFILES_POLICY" \
+  --slurpfile codex_models "$codex_models" \
+  --slurpfile opencode_models "$opencode_models" \
+  -f "$FILTER" >"$result_file"
+
+blocker_count="$(jq '.blockers | length' "$result_file")"
+if [[ "$blocker_count" -gt 0 ]]; then
+  blocker_ids="$(jq -r '[.blockers[].profileId] | join(",")' "$result_file")"
+  printf 'status=BLOCKED classification=MODEL/PROVIDER GAP profiles=%s\n' "$blocker_ids" >&2
+  exit 3
+fi
+
+jq -S '.config' "$result_file" >"$output_temp"
+chmod 0600 "$output_temp"
+if cmp -s "$normalized_input" "$output_temp"; then
+  changed=false
+else
+  changed=true
+fi
+mv -f "$output_temp" "$output_path"
+chmod 0600 "$output_path"
+
+printf 'status=RECONCILED changed=%s providers=codex-lead,codex-worker,opencode-worker profiles=design-agent-lead-v02,design-agent-planning-research-v02,design-agent-implementation-v02,design-agent-review-v02,design-agent-specialist-v02\n' "$changed"
