@@ -1,0 +1,8 @@
+{
+  "name": "fixture-ready",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "dev": "vite"
+  }
+}
