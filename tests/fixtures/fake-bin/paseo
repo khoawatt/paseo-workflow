@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+state_dir="${FAKE_STATE_DIR:?}"
+mkdir -p "$state_dir"
+printf 'paseo %s\n' "$*" >>"$state_dir/calls.log"
+
+if [[ "${1:-}" == "--version" ]]; then
+  if [[ -f "$state_dir/installed" ]]; then
+    printf '0.9.1\n'
+  elif [[ "${FAKE_PASEO_VERSION:-0.9.1}" == "missing" ]]; then
+    exit 127
+  else
+    printf '%s\n' "${FAKE_PASEO_VERSION:-0.9.1}"
+  fi
+  exit 0
+fi
+
+if [[ "${1:-}" == "provider" && "${2:-}" == "models" ]]; then
+  case "${3:-}" in
+    codex|codex-worker|codex-lead) cat "${FAKE_ROOT:?}/tests/fixtures/models/codex.json" ;;
+    opencode|opencode-worker) cat "${FAKE_ROOT:?}/tests/fixtures/models/opencode.json" ;;
+    *) exit 2 ;;
+  esac
+  exit 0
+fi
+
+if [[ "${1:-}" == "daemon" && "${2:-}" == "status" ]]; then
+  printf '{"localDaemon":"stopped","configuredListen":"127.0.0.1:6767"}\n'
+  exit 0
+fi
+
+if [[ "${1:-}" == "daemon" && "${2:-}" == "config" && "${3:-}" == "set" ]]; then
+  [[ "${FAKE_VALIDATE_FAIL:-0}" != 1 ]]
+  exit 0
+fi
+
+if [[ " $* " == *" reload "* ]]; then
+  [[ "${FAKE_RELOAD_FAIL:-0}" != 1 ]]
+  printf '{"appliedPaths":["agents.providers","daemon.agentProfiles"]}\n'
+  exit 0
+fi
+
+if [[ "${1:-}" == "daemon" && "${2:-}" == "start" ]]; then
+  printf '{"status":"started"}\n'
+  exit 0
+fi
+
+exit 0

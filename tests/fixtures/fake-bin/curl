@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'curl %s\n' "$*" >>"${FAKE_STATE_DIR:?}/calls.log"
+if [[ "${FAKE_HEALTHY:-1}" == 1 ]]; then
+  printf '{"status":"ok"}\n'
+else
+  exit 7
+fi

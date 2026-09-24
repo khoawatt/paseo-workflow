@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'sudo %s\n' "$*" >>"${FAKE_STATE_DIR:?}/calls.log"
+"$@"
