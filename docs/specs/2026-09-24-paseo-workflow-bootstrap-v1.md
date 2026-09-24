@@ -555,10 +555,20 @@ Implementer
 → ACCEPT or REQUEST_CHANGES
 ```
 
-Prefer a clean implementation state and commit SHA. Any code change after
-`ACCEPT` makes that approval stale. The Reviewer must not patch code and approve
-its own patch. Allow at most two automatic rework rounds for the same technical
-approach, then return control to Lead for diagnosis.
+Prefer a clean implementation state and commit SHA.
+
+Any implementation change after a review invalidates that review. The exact
+final implementation state must receive a fresh independent Reviewer `ACCEPT`
+before the Lead may report the work as `DONE`.
+
+Independent write workers must use separate Paseo worktrees by default. A
+shared working tree is allowed only as an explicit fallback, must be reported
+clearly, and Git history must not be reconstructed afterward to imply isolation
+that did not actually occur.
+
+The Reviewer must not patch code and approve its own patch. Allow at most two
+automatic rework rounds for the same technical approach, then return control to
+Lead for diagnosis.
 
 ## 27. Failure classification
 
