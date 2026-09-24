@@ -54,5 +54,8 @@ Then run the official V0.2 suite in order:
 | G | Runtime permission boundary |
 
 Each PASS requires observable real-host evidence. Otherwise report FAIL or
-BLOCKED and classify it before changing anything. `OPERATIONALLY VALIDATED` is
-allowed only when Preflight and A-G all pass.
+BLOCKED and classify it before changing anything. Preflight and A-G form the
+core Bootstrap V1 gate. The current official V0.2 smoke-test document also
+requires at least one real `fea-lms-rfbe` task end-to-end before the complete
+Design Agent Team is called `OPERATIONALLY VALIDATED`; if that repository is not
+present and inspected, report core smoke PASS with project validation pending.
