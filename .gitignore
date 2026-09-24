@@ -1,0 +1,13 @@
+# Local and runtime state
+.env
+.env.*
+!.env.example
+node_modules/
+coverage/
+tmp/
+*.log
+
+# Paseo host state must never be copied into this repository
+.paseo/
+config.json.backup-*
+records/private/
