@@ -25,6 +25,7 @@ run_install() {
   PASEO_WORKFLOW_PROC_VERSION="$ROOT_DIR/tests/fixtures/platform/wsl/proc-version" \
   PASEO_WORKFLOW_OS_RELEASE="$ROOT_DIR/tests/fixtures/platform/wsl/os-release" \
   PASEO_WORKFLOW_SKIP_DEPENDENCY_CHECK=1 \
+  PASEO_WORKFLOW_SKIP_SKILLS=1 \
   "$INSTALLER" --home "$home/.paseo" "$@"
 }
 
@@ -36,6 +37,7 @@ HOME="$native_home" FAKE_ROOT="$ROOT_DIR" FAKE_STATE_DIR="$native_home/state" \
 PASEO_WORKFLOW_PROC_VERSION="$ROOT_DIR/tests/fixtures/platform/native/proc-version" \
 PASEO_WORKFLOW_OS_RELEASE="$ROOT_DIR/tests/fixtures/platform/native/os-release" \
 PASEO_WORKFLOW_SKIP_DEPENDENCY_CHECK=1 \
+PASEO_WORKFLOW_SKIP_SKILLS=1 \
 "$INSTALLER" --home "$native_home/.paseo" >"$native_home/output" 2>&1
 native_status=$?
 set -e

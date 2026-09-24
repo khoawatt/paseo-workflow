@@ -43,7 +43,14 @@ config_policy_valid() {
     and .agents.providers["codex-worker"].paseoTools.enabled == false
     and .agents.providers["opencode-worker"].paseoTools.enabled == false
     and ([.daemon.agentProfiles[] | select(.id == "design-agent-lead-v02")] | length == 1)
+    and ([.daemon.agentProfiles[] | select(.id == "design-agent-lead-v02") | .provider] | all(. == "codex-lead"))
     and ([.daemon.agentProfiles[] | select(.id == "design-agent-planning-research-v02") | .provider] | all(. == "codex-worker" or . == "opencode-worker"))
+    and ([.daemon.agentProfiles[] | select(.id == "design-agent-implementation-v02")] | length == 1)
+    and ([.daemon.agentProfiles[] | select(.id == "design-agent-implementation-v02") | .provider] | all(. == "codex-worker" or . == "opencode-worker"))
+    and ([.daemon.agentProfiles[] | select(.id == "design-agent-planning-research-v02")] | length == 1)
+    and ([.daemon.agentProfiles[] | select(.id == "design-agent-review-v02")] | length == 1)
     and ([.daemon.agentProfiles[] | select(.id == "design-agent-review-v02") | .provider] | all(. == "codex-worker" or . == "opencode-worker"))
+    and ([.daemon.agentProfiles[] | select(.id == "design-agent-specialist-v02")] | length == 1)
+    and ([.daemon.agentProfiles[] | select(.id == "design-agent-specialist-v02") | .provider] | all(. == "codex-worker" or . == "opencode-worker"))
   ' "$file" >/dev/null
 }

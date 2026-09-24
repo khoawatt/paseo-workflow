@@ -5,6 +5,10 @@ state_dir="${FAKE_STATE_DIR:?}"
 mkdir -p "$state_dir"
 printf 'paseo %s\n' "$*" >>"$state_dir/calls.log"
 
+if [[ "${1:-}" == "--host" ]]; then
+  shift 2
+fi
+
 if [[ "${1:-}" == "--version" ]]; then
   if [[ -f "$state_dir/installed" ]]; then
     printf '0.9.1\n'
@@ -22,6 +26,13 @@ if [[ "${1:-}" == "provider" && "${2:-}" == "models" ]]; then
     opencode|opencode-worker) cat "${FAKE_ROOT:?}/tests/fixtures/models/opencode.json" ;;
     *) exit 2 ;;
   esac
+  exit 0
+fi
+
+if [[ "${1:-}" == "provider" && "${2:-}" == "ls" ]]; then
+  provider_status="${FAKE_PROVIDER_STATUS:-available}"
+  printf '{"providers":[{"id":"codex-lead","status":"%s"},{"id":"codex-worker","status":"%s"},{"id":"opencode-worker","status":"%s"}]}\n' \
+    "$provider_status" "$provider_status" "$provider_status"
   exit 0
 fi
 

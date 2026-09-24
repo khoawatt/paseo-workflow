@@ -66,8 +66,33 @@ ensure_paseo() {
   [[ "$current" == "$PASEO_VERSION" ]] || die "Paseo version check failed after install: $current"
 }
 
+native_skills_present() {
+  local roots="${PASEO_WORKFLOW_SKILL_ROOTS:-$HOME/.agents/skills:$HOME/.codex/skills}"
+  local skill root found
+  for skill in paseo paseo-handoff paseo-committee paseo-advisor; do
+    found=false
+    IFS=: read -r -a skill_roots <<<"$roots"
+    for root in "${skill_roots[@]}"; do
+      if [[ -f "$root/$skill/SKILL.md" ]]; then
+        found=true
+        break
+      fi
+    done
+    [[ "$found" == true ]] || return 1
+  done
+}
+
+ensure_native_skills() {
+  [[ "${PASEO_WORKFLOW_SKIP_SKILLS:-0}" == 1 ]] && return
+  native_skills_present && return
+  log 'Installing native Paseo orchestration skills'
+  npx --yes skills add getpaseo/paseo
+  native_skills_present || die 'native Paseo skill installation did not provide all required skills'
+}
+
 install_dependencies
 ensure_paseo
+ensure_native_skills
 
 mkdir -p "$paseo_home"
 config_path="$paseo_home/config.json"
