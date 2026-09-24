@@ -45,7 +45,9 @@ ports, services, or lifecycle hooks.
 Start with [AGENTS.md](AGENTS.md). Detailed guidance is in
 [Setup](docs/SETUP.md), [Configuration](docs/CONFIGURATION.md),
 [Validation](docs/VALIDATION.md), and
-[Troubleshooting](docs/TROUBLESHOOTING.md). The accepted specification is
+[Troubleshooting](docs/TROUBLESHOOTING.md). OpenCode protocol/version failures
+are covered by [OpenCode Provider Compatibility](docs/OPENCODE_COMPATIBILITY.md).
+The accepted specification is
 [Bootstrap V1](docs/specs/2026-09-24-paseo-workflow-bootstrap-v1.md).
 
 ## Non-goals

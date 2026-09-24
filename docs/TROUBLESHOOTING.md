@@ -30,6 +30,13 @@ Use native Paseo MCP discovery for real-host evidence.
 Worker shows `create_agent` in a catalog: test invocation. On the observed
 OpenCode path, a disabled tool may remain visible while the runtime denies it.
 
+OpenCode provider reports `error` with `text/html` or an unsupported-server
+message: compare the Paseo-bundled OpenCode SDK with the resolved OpenCode
+binary. Do not replace the user's interactive 2.x binary. Follow
+[OpenCode Provider Compatibility](OPENCODE_COMPATIBILITY.md) to test and pin a
+separate provider binary, preserve the terminal profile, and restart only when
+the OpenCode server manager demonstrably retained old runtime settings.
+
 `PROJECT_RUNTIME_PENDING`: inspect the real project and human-review the
 smallest documented `paseo.json`. Do not infer commands, ports, or services from
 project names.

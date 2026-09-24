@@ -8,6 +8,7 @@ source "$ROOT_DIR/tests/helpers/testlib.sh"
 required_public_files=(
   README.md AGENTS.md SECURITY.md CONTRIBUTING.md
   docs/SETUP.md docs/CONFIGURATION.md docs/VALIDATION.md docs/TROUBLESHOOTING.md
+  docs/OPENCODE_COMPATIBILITY.md
   .github/workflows/test.yml
 )
 for path in "${required_public_files[@]}"; do

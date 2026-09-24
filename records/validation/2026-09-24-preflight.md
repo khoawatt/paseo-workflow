@@ -22,6 +22,11 @@ Status: `DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING`
   and thinking level are compatible and must be preserved.
 - Required native orchestration skills are present in the host skill roots.
 
+Post-preflight provider execution exposed an OpenCode protocol mismatch that
+static availability inspection did not prove. The failure and Paseo-native
+command-override repair are recorded in
+[OpenCode Runtime Repair Evidence](2026-09-24-opencode-runtime-repair.md).
+
 ## Observed runtime/documentation differences
 
 1. Local supervisor status reports stopped while the configured loopback health

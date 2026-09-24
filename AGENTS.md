@@ -130,6 +130,9 @@ and port before adding project runtime configuration.
 - CLI provider discovery exists, but Profile discovery requires MCP.
 - A disabled OpenCode Paseo tool can remain catalog-visible while invocation is
   denied; validate the call.
+- Paseo/OpenCode protocol incompatibility may require a separately named,
+  checksum-verified provider binary while preserving interactive OpenCode 2.x;
+  follow [OpenCode Provider Compatibility](docs/OPENCODE_COMPATIBILITY.md).
 - Codex exposes no read-only mode on the inspected host; worker provider policy,
   role contract, and provider-native approvals/sandbox remain separate controls.
 

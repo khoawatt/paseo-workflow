@@ -41,3 +41,12 @@ shell/CLI or through other host capabilities. Keep three controls separate:
 
 Model intelligence is independent of these controls. Selecting a stronger
 model must never silently switch a worker role to `codex-lead`.
+
+## OpenCode executable override
+
+An `agents.providers.opencode.command` override is user/host-owned compatibility
+configuration. The bootstrap preserves it. When Paseo and the user's current
+interactive OpenCode binary are protocol-incompatible, use a separately named,
+checksum-verified provider binary as documented in
+[OpenCode Provider Compatibility](OPENCODE_COMPATIBILITY.md). Do not replace
+the interactive binary or copy provider credentials.

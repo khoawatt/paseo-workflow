@@ -59,3 +59,11 @@ bash install.sh
 
 The second successful run must report a converged config, preserve its SHA, and
 create no additional backup. Operational validation is a separate gate.
+
+## OpenCode provider compatibility
+
+If `opencode` is installed but Paseo reports a protocol/server error during
+model discovery, stop before config reconciliation and follow
+[OpenCode Provider Compatibility](OPENCODE_COMPATIBILITY.md). This is a
+conditional compatibility repair, not a default bootstrap dependency. Preserve
+the user's interactive OpenCode runtime and authentication state.
