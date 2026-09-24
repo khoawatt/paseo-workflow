@@ -69,6 +69,15 @@ assert_json "$existing" '.daemon.agentProfiles[] | select(.id == "design-agent-i
 assert_json "$existing" '.daemon.agentProfiles[] | select(.id == "design-agent-specialist-v02") | .featureValues' \
   '{"fast_mode":false}' 'profile feature preferences are preserved'
 
+runtime_array="$TEMP_ROOT/runtime-array.json"
+"$RECONCILER" --input "$ROOT_DIR/tests/fixtures/config/existing.json" --output "$runtime_array" \
+  --codex-models "$ROOT_DIR/tests/fixtures/models/codex-runtime-array.json" \
+  --opencode-models "$ROOT_DIR/tests/fixtures/models/opencode-runtime-array.json" >/dev/null \
+  || fail 'runtime 0.9.1 array model catalogs reconcile'
+assert_json "$runtime_array" '.daemon.agentProfiles[] | select(.id == "design-agent-planning-research-v02") | {provider,model,thinkingOptionId}' \
+  '{"provider":"codex-worker","model":"gpt-5.6-sol","thinkingOptionId":"high"}' \
+  'runtime array catalog preserves a compatible model and thinking option'
+
 if [[ "$existing_summary" == *'fixture-private-value'* ]]; then
   fail 'sanitized summary never prints preserved private values'
 else

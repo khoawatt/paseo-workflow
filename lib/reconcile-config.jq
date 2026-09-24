@@ -8,10 +8,16 @@ def provider_family($provider):
   end;
 
 def model_catalog($provider):
-  if provider_family($provider) == "codex" then ($codex_models[0].models // [])
-  elif provider_family($provider) == "opencode" then ($opencode_models[0].models // [])
+  if provider_family($provider) == "codex" then
+    ($codex_models[0] | if type == "array" then . else (.models // []) end)
+  elif provider_family($provider) == "opencode" then
+    ($opencode_models[0] | if type == "array" then . else (.models // []) end)
   else []
   end;
+
+def thinking_option_ids($entry):
+  $entry.thinkingOptionIds
+  // (($entry.thinkingOptions // []) | map(if type == "object" then .id else . end));
 
 def supports_preferences($provider; $model; $thinking):
   if $model == null then
@@ -21,7 +27,7 @@ def supports_preferences($provider; $model; $thinking):
     | ($entry != null)
       and (
         $thinking == null
-        or (($entry.thinkingOptions // []) | map(.id) | index($thinking) != null)
+        or (thinking_option_ids($entry) | index($thinking) != null)
       )
   end;
 

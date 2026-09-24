@@ -1,0 +1,14 @@
+[
+  {
+    "model": "GPT-5.6 Sol",
+    "id": "gpt-5.6-sol",
+    "thinkingOptionIds": ["low", "medium", "high"],
+    "defaultThinkingOptionId": "medium"
+  },
+  {
+    "model": "GPT-6 Sol",
+    "id": "gpt-6-sol",
+    "thinkingOptionIds": ["medium", "high", "max"],
+    "defaultThinkingOptionId": "medium"
+  }
+]
