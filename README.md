@@ -24,9 +24,12 @@ Possible results:
   provider and rerun verification.
 - `BLOCKED`: a safety, policy, platform, or runtime prerequisite failed.
 
-`READY` is not operational validation. The team remains
-`DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING` until real-host Preflight and
-smoke tests A-G all pass with observable evidence.
+`READY` alone is not operational validation. Bootstrap V1 is
+`OPERATIONALLY VALIDATED` only after real-host Preflight and smoke tests A-G,
+the bootstrap regression suite, live idempotency, and secret-safety checks all
+pass with observable evidence. This status applies only to the bootstrap and
+orchestration distribution; each adopting project requires its own local
+project-runtime validation.
 
 ## Commands
 

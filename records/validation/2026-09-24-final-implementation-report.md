@@ -9,11 +9,9 @@ Paseo version: `0.9.1`
 
 - Bootstrap status: `READY` — runtime-tested.
 - Core smoke status: `PASS` — Preflight and A-G runtime-tested.
-- Design Agent Team status:
-  `DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING`.
-- `OPERATIONALLY VALIDATED`: not claimed. The current official smoke suite
-  requires a real `fea-lms-rfbe` task after core A-G, and that project was not
-  present and inspected.
+- Bootstrap V1 status: `OPERATIONALLY VALIDATED`.
+- Scope: bootstrap/orchestration distribution only. This result does not claim
+  project-runtime validation for any application repository.
 
 ## Implementation and fixture tests
 
@@ -25,6 +23,8 @@ Paseo version: `0.9.1`
 - Fixture suite: 98 assertions passed, zero failures.
 - Secret safety: PASS; repository contains no credentials, live config backup,
   runtime agent/workspace/session IDs, or private auth state.
+- Complete operational gate: PASS — Preflight, A-G, regression suite, live
+  idempotency, and secret-safety checks all have observable evidence.
 
 ## Host policy
 
@@ -120,9 +120,9 @@ installed compatibility provider binary were retained for rollback.
    the corrective prompt to the running agent and preserved identity.
 8. Codex usage and Gemini quota prevented the preferred committee provider
    diversity. Restricted OpenCode model-family diversity completed the test.
-9. The accepted Bootstrap V1 spec describes Preflight plus A-G as its gate;
-   the current official V0.2 smoke document additionally requires one real
-   `fea-lms-rfbe` task before full operational validation.
+9. The approved architecture adjustment separates Bootstrap V1 validation from
+   project-specific adoption. No application repository is required for the
+   bootstrap gate; future project runtime is derived and validated locally.
 
 ## Architecture impact
 
@@ -131,19 +131,21 @@ runtime, provider router, scheduler, message bus, permission queue, or state
 database was added. Observed failures were classified and handled as config,
 runtime compatibility, validation-environment, or model/provider issues.
 
-## Remaining project-runtime work
+## Future adopter/project-runtime considerations
 
-- Locate and inspect the real `fea-lms-rfbe` repository.
-- Derive its smallest valid `paseo.json` from actual scripts, services, ports,
-  and environment; do not guess.
-- Run one bounded real project task end-to-end through Lead, Implementation,
-  fresh Review, verification, and cleanup.
-- Re-run any project-specific permission or service checks revealed by that
-  inspection.
+No project-runtime work remains for Bootstrap V1 itself. For each future
+adopting repository:
+
+- run `install-project.sh <repo>` against the real repository;
+- derive any project runtime only from inspected scripts, services, ports, and
+  environment;
+- human-review proposed runtime configuration before writing it;
+- perform project-specific task, service, permission, and cleanup validation
+  locally in that repository.
 
 ## Next recommended action
 
-Run `install-project.sh <real-fea-lms-rfbe-path>` in inspection mode. If it
-returns a project-runtime proposal, human-review that proposal before writing
-project configuration, then execute one bounded real task. Only after that task
-passes should the full Design Agent Team be labeled `OPERATIONALLY VALIDATED`.
+Publish/review the Bootstrap V1 branch and tag the validated distribution when
+ready. Future application repositories should adopt it through
+`install-project.sh <repo>` and keep their project-specific validation local;
+that work does not change Bootstrap V1's operational status.

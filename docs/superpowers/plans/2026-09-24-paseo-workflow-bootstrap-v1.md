@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build an idempotent WSL2 Ubuntu bootstrap distribution that installs and reconciles the existing Paseo Design Agent Team V0.2, validates it with repository fixtures and real-host tests, and never claims operational validation without observable Preflight plus A-G evidence.
+**Goal:** Build an idempotent WSL2 Ubuntu bootstrap distribution that installs and reconciles the existing Paseo Design Agent Team V0.2, validates it with repository fixtures and real-host tests, and never claims operational validation without observable Preflight, A-G, bootstrap regression, idempotency, and secret-safety evidence.
 
 **Architecture:** Bash entrypoints orchestrate installation and validation only; a focused `jq` reconciliation program owns configuration merge semantics. Paseo remains the runtime for providers, profiles, skills, agents, workspaces, permissions, and lifecycle operations. Host mutation is delayed until fixture tests pass and uses inspect → candidate → native validation → timestamped backup → atomic replace → reload/verify, with automatic rollback on apply failure.
 
@@ -20,7 +20,7 @@
 - Preserve credentials, unknown fields, unrelated providers/profiles, compatible model preferences, and thinking preferences.
 - `paseoTools.enabled = false` is a Paseo catalog boundary, not an OS security sandbox.
 - High-impact/destructive operations, canonical merge, production changes, credentials, and architecture changes are human-gated.
-- `READY` means bootstrap-ready only. `OPERATIONALLY VALIDATED` requires real-host Preflight plus smoke tests A-G.
+- `READY` means bootstrap-ready only. Bootstrap V1 `OPERATIONALLY VALIDATED` requires real-host Preflight plus smoke tests A-G, the regression suite, live idempotency, and secret-safety checks. Project-specific validation remains local to future adopters.
 
 ## Observed runtime/docs differences to carry through implementation
 
@@ -461,11 +461,11 @@ Trigger a safe provider permission request, verify it is visible, prove the work
 
 - [ ] **Step 7: Classify every non-pass and write the final report**
 
-Use only `CONFIG`, `PROMPT/POLICY`, `PASEO GAP`, `PROJECT GAP`, `MODEL/PROVIDER GAP`, or `ARCHITECTURE GAP`. Report Paseo version, bootstrap status, host policy, provider/profile/skill status, ownership/backup/idempotency/secret results, boundary result, A-G matrix, gaps/mismatches, architecture changes, remaining project runtime work, and next action.
+Use only `CONFIG`, `PROMPT/POLICY`, `PASEO GAP`, `PROJECT GAP`, `MODEL/PROVIDER GAP`, or `ARCHITECTURE GAP`. Report Paseo version, bootstrap status, host policy, provider/profile/skill status, ownership/backup/idempotency/secret results, boundary result, A-G matrix, gaps/mismatches, architecture changes, future adopter/project-runtime considerations, and next action.
 
 - [ ] **Step 8: Apply the operational-validation gate and commit**
 
-Set `OPERATIONALLY VALIDATED` only if real-host Preflight and every A-G test pass. Otherwise set `DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING` with explicit FAIL/BLOCKED entries.
+Set Bootstrap V1 `OPERATIONALLY VALIDATED` only if real-host Preflight, every A-G test, the bootstrap regression suite, live idempotency, and secret-safety checks pass. Keep project-specific validation separate and local to future adopters. Otherwise set `DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING` with explicit FAIL/BLOCKED entries.
 
 ```bash
 bash tests/test.sh

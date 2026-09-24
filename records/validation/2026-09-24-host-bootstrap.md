@@ -86,6 +86,9 @@ does not claim a hard host security sandbox.
 ## Remaining gates
 
 - Official V0.2 smoke tests A-G: not yet executed for this bootstrap state.
-- Project runtime: pending inspection of the real target repository.
-- `OPERATIONALLY VALIDATED`: not claimed.
-
+- Regression, idempotency, and secret-safety evidence must be included in the
+  final gate.
+- Project-specific runtime validation is intentionally outside the bootstrap
+  gate and remains local to future adopters.
+- `OPERATIONALLY VALIDATED`: not claimed at this intermediate phase; see the
+  final implementation report for the completed gate.

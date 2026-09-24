@@ -111,15 +111,20 @@ alone is insufficient on Paseo 0.9.1.
 Then run in order: Preflight; A fan-out research; B isolated implementation;
 C implementation plus fresh review; D parallel implementation worktrees; E
 native handoff/advisor/committee; F follow-up/redirect/cancel/archive; G runtime
-permission boundary. Only observable real-host PASS results permit the label
-`OPERATIONALLY VALIDATED`.
+permission boundary. The Bootstrap V1 operational-validation gate also requires
+the repository regression suite, live idempotency, and secret-safety checks.
+Only observable PASS evidence for the complete gate permits the label
+`OPERATIONALLY VALIDATED`, and that label applies only to this bootstrap and
+orchestration distribution.
 
 ## Project runtime
 
 Run `bash install-project.sh <repo>`. V1 never writes `paseo.json`. It returns
 `PROJECT_RUNTIME_READY`, `PROJECT_RUNTIME_PENDING`, or `BLOCKED` based on the
 actual repository. Human-review any proposed setup, teardown, service, command,
-and port before adding project runtime configuration.
+and port before adding project runtime configuration. Project-specific
+validation stays local to the adopting repository and is not a prerequisite for
+Bootstrap V1 operational validation.
 
 ## Known Paseo 0.9.1 differences
 

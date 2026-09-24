@@ -48,8 +48,11 @@ READY / AUTH_REQUIRED / BLOCKED
         ↓
 Core smoke tests A-G
         ↓
+Bootstrap regression suite + idempotency + secret safety
+        ↓
 OPERATIONALLY VALIDATED
-only if all required tests actually pass
+for the bootstrap/orchestration distribution only,
+and only if the complete gate actually passes
 ```
 
 ## 2. Authority order
@@ -214,8 +217,15 @@ target repository exists?
 ```
 
 Do not assume test/dev commands, ports, services, or frontend/backend topology.
-Do not invent `fea-lms-rfbe/paseo.json` before that repository exists and its
-real scripts are inspectable.
+Do not invent `<repo>/paseo.json` or any project runtime before the target
+repository exists and its real scripts are inspectable.
+
+Bootstrap validation is project-agnostic. It proves host bootstrap,
+provider/profile policy, native orchestration primitives, worktree isolation,
+review flow, lifecycle controls, skills, permissions, idempotency,
+preservation, and secret safety. Project-specific validation occurs later and
+locally when an actual repository adopts this bootstrap; it is not a
+prerequisite for Bootstrap V1 operational validation.
 
 ## 8. Configuration ownership
 
@@ -478,8 +488,11 @@ component, evidence, and recommended next action.
 BOOTSTRAP READY ≠ OPERATIONALLY VALIDATED
 ```
 
-The architecture becomes `OPERATIONALLY VALIDATED` only after the required
-real-host V0.2 smoke tests pass. Otherwise report:
+Bootstrap V1 becomes `OPERATIONALLY VALIDATED` only after the required
+real-host V0.2 smoke tests, bootstrap regression suite, live idempotency, and
+secret-safety checks pass. This classification applies only to the bootstrap
+and orchestration distribution. It does not validate project runtime for any
+future adopting repository. Otherwise report:
 
 ```text
 DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING
@@ -690,7 +703,7 @@ Observed runtime/docs vs V0.2 mismatches
 
 Architecture changes required, if any
 
-Remaining project-runtime work
+Future adopter/project-runtime considerations, if any
 
 Next recommended action
 ```
@@ -700,9 +713,21 @@ tested, and not-tested/blocked. Do not claim success from static inspection.
 
 ## 37. Operational-validation gate
 
-Only report `OPERATIONALLY VALIDATED` when Preflight and A-G all pass with real,
-observable host evidence. Otherwise report `DESIGN COMPLETE / OPERATIONAL
-VALIDATION PENDING` or the appropriate blocked/failure status.
+Only report `OPERATIONALLY VALIDATED` for Bootstrap V1 when all of the following
+pass with observable evidence:
+
+```text
+Preflight
++ A + B + C + D + E + F + G
++ bootstrap regression suite
++ live idempotency
++ secret-safety checks
+```
+
+This classification applies only to the bootstrap/orchestration distribution.
+Project-specific validation remains local to each future adopting repository.
+Otherwise report `DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING` or the
+appropriate blocked/failure status.
 
 ## 38. V1 non-goals
 
@@ -739,7 +764,10 @@ or project-runtime assumptions for uninspected repositories.
 - The bootstrap must be idempotent.
 - Project runtime must be derived from the real project, never guessed.
 - `READY` means bootstrap-ready, not operationally validated.
-- Core smoke tests A-G remain the operational-validation gate.
+- Preflight, A-G, the bootstrap regression suite, live idempotency, and
+  secret-safety checks form the Bootstrap V1 operational-validation gate.
+- Project-specific validation is separate, local to the adopting repository,
+  and not a Bootstrap V1 completion prerequisite.
 
 Implement against these constraints using the smallest Paseo-native solution
 possible.

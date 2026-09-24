@@ -54,8 +54,20 @@ Then run the official V0.2 suite in order:
 | G | Runtime permission boundary |
 
 Each PASS requires observable real-host evidence. Otherwise report FAIL or
-BLOCKED and classify it before changing anything. Preflight and A-G form the
-core Bootstrap V1 gate. The current official V0.2 smoke-test document also
-requires at least one real `fea-lms-rfbe` task end-to-end before the complete
-Design Agent Team is called `OPERATIONALLY VALIDATED`; if that repository is not
-present and inspected, report core smoke PASS with project validation pending.
+BLOCKED and classify it before changing anything. The complete Bootstrap V1
+gate is:
+
+```text
+Preflight
++ A + B + C + D + E + F + G
++ bootstrap regression suite
++ live idempotency
++ secret-safety checks
+```
+
+The existing disposable smoke fixture provides the real Git and worktree
+evidence required by B, C, and D; no application repository or duplicate
+fixture is required. When the complete gate passes, `OPERATIONALLY VALIDATED`
+applies only to the bootstrap/orchestration distribution. A future adopting
+project runs `install-project.sh <repo>`, derives runtime from that inspected
+repository, and performs project-specific validation locally.

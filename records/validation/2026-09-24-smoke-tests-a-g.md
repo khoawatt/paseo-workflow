@@ -3,8 +3,10 @@
 Date: 2026-09-24  
 Host: WSL2 Ubuntu, sanitized  
 Source: `paseo-orchestration-smoke-tests-v0.2.md`  
-Overall status: `CORE SMOKE PASS / PROJECT TASK PENDING`  
-Operational status: `DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING`
+Overall status: `PASS`
+Bootstrap V1 status: `OPERATIONALLY VALIDATED`
+Scope: bootstrap/orchestration distribution only; no application project is
+project-runtime validated by this result.
 
 ## Evidence policy
 
@@ -173,18 +175,29 @@ Status: `PASS`
   proven Paseo orchestration-catalog boundary. It is not described as a hard
   host security sandbox.
 
-## Core result and remaining validation
+## Bootstrap V1 operational result
 
 Preflight and core tests A-G all passed with real-host observable evidence.
 All test-owned agents and workspaces were archived; managed worktree directories
 were removed by Paseo. The local fixture checkout was verified clean, then its
 task-owned temporary directory was removed during post-validation cleanup.
 
-The accepted Bootstrap V1 specification describes Preflight plus A-G as its
-operational gate. The current official smoke-test document adds a further
-requirement: run at least one real `fea-lms-rfbe` task end-to-end before marking
-the complete Design Agent Team V0.2 `OPERATIONALLY VALIDATED`. That project was
-not present or inspected during this run, so the stronger status is not claimed.
+The complete project-agnostic Bootstrap V1 gate also passed:
+
+- bootstrap regression suite: 98 assertions, zero failures;
+- live idempotency: two no-op reruns preserved the config SHA-256 and backup
+  count;
+- secret-safety checks: PASS.
+
+Bootstrap V1 is therefore `OPERATIONALLY VALIDATED`. This classification proves
+the bootstrap/orchestration distribution only. It does not validate runtime for
+any application repository. The existing disposable fixture already supplied
+the real Git/worktree evidence for B-D, so no redundant project repository was
+created.
+
+Future projects adopt the bootstrap, run `install-project.sh <repo>`, derive
+runtime only from the inspected repository, and perform project-specific
+validation locally.
 
 Observed execution gaps that did not invalidate core results:
 

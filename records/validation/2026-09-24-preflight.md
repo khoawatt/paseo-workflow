@@ -48,5 +48,5 @@ command-override repair are recorded in
 - Config mutation: not performed during preflight.
 - Capability boundary: must be revalidated with new sessions after bootstrap.
 - Smoke tests A-G: not run for this bootstrap version.
-- `fea-lms-rfbe` runtime: pending until the real project is present and
-  inspectable.
+- Project-specific runtime is outside the Bootstrap V1 gate. Future adopters
+  inspect and validate their real repositories locally.
