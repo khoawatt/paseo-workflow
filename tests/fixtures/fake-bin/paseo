@@ -37,7 +37,11 @@ if [[ "${1:-}" == "provider" && "${2:-}" == "ls" ]]; then
 fi
 
 if [[ "${1:-}" == "daemon" && "${2:-}" == "status" ]]; then
-  printf '{"localDaemon":"stopped","configuredListen":"127.0.0.1:6767"}\n'
+  if [[ -f "$state_dir/daemon-running" ]]; then
+    printf '{"localDaemon":"running","configuredListen":"127.0.0.1:6767"}\n'
+  else
+    printf '{"localDaemon":"stopped","configuredListen":"127.0.0.1:6767"}\n'
+  fi
   exit 0
 fi
 
@@ -53,6 +57,7 @@ if [[ " $* " == *" reload "* ]]; then
 fi
 
 if [[ "${1:-}" == "daemon" && "${2:-}" == "start" ]]; then
+  touch "$state_dir/daemon-running"
   printf '{"status":"started"}\n'
   exit 0
 fi

@@ -117,8 +117,9 @@ summary="$($ROOT_DIR/bin/reconcile-config "${reconcile_args[@]}")" || exit $?
 printf '%s\n' "$summary"
 
 if [[ -f "$config_path" ]] && cmp -s "$config_path" "$candidate"; then
-  printf 'READY: configuration already converged; no backup or write required\n'
-  exit 0
+  printf 'Configuration already converged; no backup or write required\n'
+  "$ROOT_DIR/verify.sh" --home "$paseo_home"
+  exit $?
 fi
 
 if [[ "$dry_run" == true ]]; then
@@ -185,4 +186,22 @@ if [[ "$apply_ok" != true ]] || ! config_policy_valid "$config_path"; then
   die 'configuration was restored after reload or verification failure'
 fi
 
-printf 'READY: Paseo %s configuration reconciled and applied\n' "$PASEO_VERSION"
+set +e
+"$ROOT_DIR/verify.sh" --home "$paseo_home"
+verify_status=$?
+set -e
+if [[ $verify_status -eq 1 ]]; then
+  rollback
+  if [[ "$local_daemon" == running || "$local_daemon" == ready ]]; then
+    paseo reload --json --home "$paseo_home" >/dev/null 2>&1 || true
+  elif curl -fsS "http://$configured_listen/api/health" >/dev/null 2>&1; then
+    paseo --host "$configured_listen" reload --json >/dev/null 2>&1 || true
+  fi
+  die 'configuration was restored after final verification returned BLOCKED'
+elif [[ $verify_status -eq 2 ]]; then
+  exit 2
+elif [[ $verify_status -ne 0 ]]; then
+  die "verification returned unexpected status $verify_status"
+fi
+
+printf 'READY: Paseo %s configuration reconciled, applied, and verified\n' "$PASEO_VERSION"

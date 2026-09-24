@@ -18,6 +18,11 @@ run_install() {
   local home="$1"
   shift
   mkdir -p "$home" "$home/state"
+  local skill
+  for skill in paseo paseo-handoff paseo-committee paseo-advisor; do
+    mkdir -p "$home/skills/$skill"
+    printf '# fixture\n' >"$home/skills/$skill/SKILL.md"
+  done
   PATH="$ROOT_DIR/tests/fixtures/fake-bin:$PATH" \
   HOME="$home" \
   FAKE_ROOT="$ROOT_DIR" \
@@ -26,6 +31,7 @@ run_install() {
   PASEO_WORKFLOW_OS_RELEASE="$ROOT_DIR/tests/fixtures/platform/wsl/os-release" \
   PASEO_WORKFLOW_SKIP_DEPENDENCY_CHECK=1 \
   PASEO_WORKFLOW_SKIP_SKILLS=1 \
+  PASEO_WORKFLOW_SKILL_ROOTS="$home/skills" \
   "$INSTALLER" --home "$home/.paseo" "$@"
 }
 
@@ -59,6 +65,11 @@ if rg -q 'paseo --host 127.0.0.1:6767 reload' "$apply_home/state/calls.log"; the
   TESTS_RUN=$((TESTS_RUN + 1)); pass 'healthy external daemon receives explicit-host reload'
 else
   fail 'healthy external daemon receives explicit-host reload'
+fi
+if rg -q 'provider ls' "$apply_home/state/calls.log"; then
+  TESTS_RUN=$((TESTS_RUN + 1)); pass 'installer finishes with native provider verification'
+else
+  fail 'installer finishes with native provider verification'
 fi
 
 stable_sha="$(sha256sum "$apply_home/.paseo/config.json" | awk '{print $1}')"
