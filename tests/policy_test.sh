@@ -40,6 +40,14 @@ assert_json "$PROFILES" '[.profiles[] | select(.name == "Integration")] | length
   'Integration is not a permanent V0.2 profile'
 assert_json "$PROFILES" '[.profiles[] | has("model") or has("thinkingOptionId")] | any' 'false' \
   'fresh policy does not hard-code user-owned model or thinking preferences'
+assert_json "$PROFILES" '[.profiles[] | select(.id == "design-agent-lead-v02" or .id == "design-agent-review-v02") | .notes | contains("Any implementation change after a review invalidates that review.")] | all' \
+  'true' 'Lead and Review notes invalidate review after any implementation change'
+assert_json "$PROFILES" '[.profiles[] | select(.id == "design-agent-lead-v02" or .id == "design-agent-review-v02") | .notes | contains("fresh independent Reviewer ACCEPT before the Lead may report the work as DONE")] | all' \
+  'true' 'Lead and Review notes require fresh ACCEPT on the final state'
+assert_json "$PROFILES" '[.profiles[] | select(.id == "design-agent-lead-v02" or .id == "design-agent-implementation-v02") | .notes | contains("Independent write workers must use separate Paseo worktrees by default.")] | all' \
+  'true' 'Lead and Implementation notes require separate worktrees by default'
+assert_json "$PROFILES" '[.profiles[] | select(.id == "design-agent-lead-v02" or .id == "design-agent-implementation-v02") | .notes | contains("Git history must not be reconstructed afterward to imply isolation that did not actually occur.")] | all' \
+  'true' 'Lead and Implementation notes forbid reconstructed isolation claims'
 
 if rg -ni 'api[_-]?key|access[_-]?token|refresh[_-]?token|password|session[_-]?cookie|private[_-]?key' \
   "$PROVIDERS" "$PROFILES" >/dev/null; then

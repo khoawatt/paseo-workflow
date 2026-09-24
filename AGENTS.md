@@ -84,6 +84,17 @@ explicit human request, existing user preference, profile default, then Lead
 selection. Preserve model/thinking preferences when compatible; otherwise
 report `MODEL/PROVIDER GAP` instead of silently widening authority.
 
+## Implementation isolation and review validity
+
+Any implementation change after a review invalidates that review. The exact
+final implementation state must receive a fresh independent Reviewer `ACCEPT`
+before the Lead may report the work as `DONE`.
+
+Independent write workers must use separate Paseo worktrees by default. A
+shared working tree is allowed only as an explicit fallback, must be reported
+clearly, and Git history must not be reconstructed afterward to imply isolation
+that did not actually occur.
+
 ## Safe configuration workflow
 
 `install.sh` inspects before mutation, builds and natively validates a candidate,

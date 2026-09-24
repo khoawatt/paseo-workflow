@@ -42,6 +42,22 @@ Evidence labels in reports:
 - `runtime-tested`: observed on the actual Paseo host.
 - `not tested / blocked`: no valid evidence or a named prerequisite failed.
 
+## Review and worktree invariants
+
+Any implementation change after a review invalidates that review. The exact
+final implementation state must receive a fresh independent Reviewer `ACCEPT`
+before the Lead may report the work as `DONE`.
+
+Independent write workers must use separate Paseo worktrees by default. A
+shared working tree is allowed only as an explicit fallback, must be reported
+clearly, and Git history must not be reconstructed afterward to imply isolation
+that did not actually occur.
+
+Review evidence must identify the exact final commit SHA or otherwise immutable
+reviewable state. If a shared-tree fallback was used, record that fact and the
+actual write history directly; a later commit does not retroactively prove
+worktree isolation.
+
 ## Operational validation gate
 
 Before A, validate the capability boundary at call level:
