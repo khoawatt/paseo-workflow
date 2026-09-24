@@ -24,6 +24,8 @@ done
 require_wsl_ubuntu
 
 config_path="$paseo_home/config.json"
+providers_policy="$ROOT_DIR/policy/providers.json"
+profiles_policy="$ROOT_DIR/policy/profiles.json"
 blockers=()
 auth_required=()
 config_status=valid
@@ -40,7 +42,7 @@ elif ! jq -e . "$config_path" >/dev/null 2>&1; then
   config_status=invalid
   profiles_status='not tested'
   blockers+=('Paseo config is not valid JSON')
-elif ! config_policy_valid "$config_path"; then
+elif ! config_policy_valid "$config_path" "$providers_policy" "$profiles_policy"; then
   config_status='policy mismatch'
   profiles_status='policy mismatch'
   blockers+=('required provider/profile policy is not reconciled')
@@ -67,13 +69,49 @@ local_daemon="$(jq -r '.localDaemon // "unknown"' <<<"$status_json" 2>/dev/null 
 configured_listen="$(jq -r '.configuredListen // "127.0.0.1:6767"' <<<"$status_json" 2>/dev/null || printf '127.0.0.1:6767')"
 
 provider_json=''
+target_args=()
 if [[ "$local_daemon" == running || "$local_daemon" == ready ]]; then
-  provider_json="$(paseo provider ls --json --home "$paseo_home" 2>/dev/null || true)"
+  target_args=(--home "$paseo_home")
 elif curl -fsS "http://$configured_listen/api/health" >/dev/null 2>&1; then
-  provider_json="$(paseo --host "$configured_listen" provider ls --json 2>/dev/null || true)"
+  target_args=(--host "$configured_listen")
 else
   daemon_status=unreachable
   blockers+=("Paseo daemon is not reachable at $configured_listen")
+fi
+
+codex_runtime_state='not tested'
+opencode_runtime_state='not tested'
+if [[ "$daemon_status" == available ]]; then
+  for provider in codex opencode; do
+    diagnostic_json="$(paseo "${target_args[@]}" provider diagnostic "$provider" --json 2>/dev/null || true)"
+    diagnostic_state="$(provider_diagnostic_state "$diagnostic_json")"
+    if [[ "$provider" == codex ]]; then
+      codex_runtime_state="$diagnostic_state"
+    else
+      opencode_runtime_state="$diagnostic_state"
+    fi
+    case "$diagnostic_state" in
+      ready) ;;
+      missing)
+        providers_status=missing
+        blockers+=("provider runtime $provider is missing. $(provider_install_action "$provider")")
+        ;;
+      auth_required)
+        providers_status='authentication required'
+        auth_required+=("provider runtime $provider requires authentication. $(provider_auth_action "$provider")")
+        ;;
+      *)
+        providers_status=error
+        if [[ "$provider" == opencode ]]; then
+          blockers+=("provider runtime opencode diagnostic is not ready. Run: paseo provider diagnostic opencode --json. If it reports a protocol/version error, follow docs/OPENCODE_COMPATIBILITY.md; paseo-workflow will not replace the user-managed runtime.")
+        else
+          blockers+=("provider runtime codex diagnostic is not ready. Run: paseo provider diagnostic codex --json, correct the user-managed runtime, then rerun verification.")
+        fi
+        ;;
+    esac
+  done
+
+  provider_json="$(paseo "${target_args[@]}" provider ls --json 2>/dev/null || true)"
 fi
 
 if [[ -n "$provider_json" ]]; then
@@ -86,8 +124,18 @@ if [[ -n "$provider_json" ]]; then
       end
     ' <<<"$provider_json" 2>/dev/null || printf missing)"
     if [[ "$provider_state" != available ]]; then
-      providers_status=unavailable
-      auth_required+=("provider $provider is $provider_state")
+      provider_family=codex
+      [[ "$provider" == opencode-worker ]] && provider_family=opencode
+      family_state="$codex_runtime_state"
+      [[ "$provider_family" == opencode ]] && family_state="$opencode_runtime_state"
+      if [[ "$family_state" == auth_required ]]; then
+        : # The base-runtime authentication action above owns this classification.
+      elif [[ "$family_state" == missing || "$family_state" == error ]]; then
+        : # The base-runtime blocker above owns this classification.
+      else
+        providers_status=unavailable
+        blockers+=("required provider capability class $provider is $provider_state even though its external runtime is ready; inspect Paseo provider policy and rerun verification")
+      fi
     fi
   done
 elif [[ "$daemon_status" == available ]]; then
@@ -116,6 +164,8 @@ result="$(jq -n \
   --arg profiles "$profiles_status" \
   --arg skills "$skills_status" \
   --arg daemon "$daemon_status" \
+  --arg codexRuntime "$codex_runtime_state" \
+  --arg opencodeRuntime "$opencode_runtime_state" \
   --argjson blockers "$blockers_json" \
   --argjson authRequired "$auth_json" \
   '{
@@ -127,7 +177,11 @@ result="$(jq -n \
       providers: $providers,
       profiles: $profiles,
       skills: $skills,
-      daemon: $daemon
+      daemon: $daemon,
+      providerRuntimes: {
+        codex: $codexRuntime,
+        opencode: $opencodeRuntime
+      }
     },
     runtime: {
       profileDiscovery: "not tested",

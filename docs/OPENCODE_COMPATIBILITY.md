@@ -3,6 +3,11 @@
 This page covers only the OpenCode provider used by Paseo. It does not configure
 WSL networking, SSH, systemd, Paseo Desktop, or host exposure.
 
+This is a conditional human-operated troubleshooting procedure. Bootstrap V1
+does not download, install, update, or replace OpenCode automatically. Use this
+path only after native Paseo diagnostics confirm a protocol/version mismatch;
+otherwise reuse the user's healthy existing runtime.
+
 ## Observed failure on 2026-09-24
 
 The validated host had:

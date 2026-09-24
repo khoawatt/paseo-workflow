@@ -29,6 +29,11 @@ no restricted provider supports the preference, reconciliation stops with
 Agent, session, workspace, and worktree IDs; daemon state; live backups;
 permissions; and authentication state are not version-controlled.
 
+Codex/OpenCode executables and their updates are user/host-owned external
+prerequisites. The bootstrap may read native Paseo diagnostics and preserve an
+existing command override, but it never installs or replaces either provider
+runtime.
+
 ## Capability versus permissions
 
 `paseoTools.enabled=false` means Paseo orchestration tools are not enabled for
@@ -49,4 +54,6 @@ configuration. The bootstrap preserves it. When Paseo and the user's current
 interactive OpenCode binary are protocol-incompatible, use a separately named,
 checksum-verified provider binary as documented in
 [OpenCode Provider Compatibility](OPENCODE_COMPATIBILITY.md). Do not replace
-the interactive binary or copy provider credentials.
+the interactive binary or copy provider credentials. This is a conditional,
+human-operated troubleshooting path after diagnostics confirm a mismatch, not
+a default bootstrap responsibility.

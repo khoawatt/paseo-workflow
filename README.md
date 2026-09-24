@@ -5,6 +5,11 @@ architecture. Paseo remains the orchestration runtime; this repository only
 reconciles the host policy, Agent Profiles, and native Paseo skills required to
 run that architecture.
 
+Codex and OpenCode are external user/host prerequisites. Install and
+authenticate both CLIs on the WSL host before running the bootstrap;
+`paseo-workflow` detects and verifies them but never installs, upgrades, or
+replaces them.
+
 ## Quick start
 
 ```bash
@@ -15,14 +20,16 @@ bash install.sh
 
 The installer checks WSL/Ubuntu, installs the pinned supported Paseo CLI when
 needed, preserves user-owned configuration, backs up a changed live config,
-writes atomically, reloads the selected daemon, and runs `verify.sh`.
+writes atomically, reloads the selected daemon, and runs `verify.sh`. “Fresh
+host” means a fresh WSL Ubuntu Paseo host whose documented external Codex and
+OpenCode prerequisites have already been satisfied by the user.
 
 Possible results:
 
 - `READY`: bootstrap prerequisites and structural policy are ready.
-- `AUTH_REQUIRED`: structure is ready, but a human must authenticate a required
-  provider and rerun verification.
-- `BLOCKED`: a safety, policy, platform, or runtime prerequisite failed.
+- `AUTH_REQUIRED`: a required installed provider needs interactive human login.
+- `BLOCKED`: a safety, policy, platform, missing external runtime, or other
+  non-authentication prerequisite failed; the report includes the next action.
 
 `READY` alone is not operational validation. Bootstrap V1 is
 `OPERATIONALLY VALIDATED` only after real-host Preflight and smoke tests A-G,

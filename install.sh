@@ -85,9 +85,61 @@ native_skills_present() {
 ensure_native_skills() {
   [[ "${PASEO_WORKFLOW_SKIP_SKILLS:-0}" == 1 ]] && return
   native_skills_present && return
-  log 'Installing native Paseo orchestration skills'
+  log 'Installing native Paseo orchestration skills through the upstream Paseo flow'
+  warn 'current Paseo docs expose no reproducible skill-version pin; selected skills may refresh on host startup'
   npx --yes skills add getpaseo/paseo
   native_skills_present || die 'native Paseo skill installation did not provide all required skills'
+}
+
+select_provider_target() {
+  local status_json local_daemon configured_listen
+  status_json="$(paseo daemon status --json --home "$paseo_home" 2>/dev/null || printf '{}')"
+  local_daemon="$(jq -r '.localDaemon // "unknown"' <<<"$status_json")"
+  configured_listen="$(jq -r '.configuredListen // "127.0.0.1:6767"' <<<"$status_json")"
+
+  if [[ "$local_daemon" == running || "$local_daemon" == ready ]]; then
+    provider_target_args=(--home "$paseo_home")
+  elif curl -fsS "http://$configured_listen/api/health" >/dev/null 2>&1; then
+    provider_target_args=(--host "$configured_listen")
+  else
+    log 'Starting the selected Paseo daemon for provider preflight'
+    paseo daemon start --home "$paseo_home" >/dev/null \
+      || die "Paseo daemon could not start. Run: paseo daemon status --json --home \"$paseo_home\""
+    provider_target_args=(--home "$paseo_home")
+  fi
+}
+
+preflight_external_provider() {
+  local provider="$1"
+  local models_output="$2"
+  local diagnostic_json diagnostic_state
+  diagnostic_json="$(paseo "${provider_target_args[@]}" provider diagnostic "$provider" --json 2>/dev/null || true)"
+  diagnostic_state="$(provider_diagnostic_state "$diagnostic_json")"
+
+  case "$diagnostic_state" in
+    ready) ;;
+    missing)
+      die "provider runtime $provider is missing. $(provider_install_action "$provider")"
+      ;;
+    auth_required)
+      printf 'AUTH_REQUIRED: provider runtime %s requires authentication. %s\n' \
+        "$provider" "$(provider_auth_action "$provider")" >&2
+      exit 2
+      ;;
+    *)
+      if [[ "$provider" == opencode ]]; then
+        die 'provider runtime opencode diagnostic is not ready. Run `paseo provider diagnostic opencode --json`; for protocol/version errors follow docs/OPENCODE_COMPATIBILITY.md. paseo-workflow will not install or replace OpenCode.'
+      fi
+      die 'provider runtime codex diagnostic is not ready. Run `paseo provider diagnostic codex --json`, correct the user-managed Codex runtime, and rerun.'
+      ;;
+  esac
+
+  if ! paseo "${provider_target_args[@]}" provider models "$provider" --thinking --json >"$models_output"; then
+    if [[ "$provider" == opencode ]]; then
+      die 'OpenCode model discovery failed after a ready diagnostic. Inspect `paseo provider diagnostic opencode --json` and use docs/OPENCODE_COMPATIBILITY.md only when a protocol/version mismatch is confirmed.'
+    fi
+    die 'Codex model discovery failed after a ready diagnostic. Inspect `paseo provider diagnostic codex --json` and correct the external runtime or authentication.'
+  fi
 }
 
 install_dependencies
@@ -102,10 +154,10 @@ codex_models="$work_dir/codex-models.json"
 opencode_models="$work_dir/opencode-models.json"
 candidate="$work_dir/config.json"
 
-paseo provider models codex --thinking --json --home "$paseo_home" >"$codex_models" \
-  || die 'unable to discover Codex models; authenticate/install the provider and rerun'
-paseo provider models opencode --thinking --json --home "$paseo_home" >"$opencode_models" \
-  || die 'unable to discover OpenCode models; authenticate/install the provider and rerun'
+provider_target_args=()
+select_provider_target
+preflight_external_provider codex "$codex_models"
+preflight_external_provider opencode "$opencode_models"
 
 reconcile_args=(--output "$candidate" --codex-models "$codex_models" --opencode-models "$opencode_models")
 if [[ -f "$config_path" ]]; then
@@ -176,7 +228,8 @@ else
   paseo daemon start --home "$paseo_home" >/dev/null || apply_ok=false
 fi
 
-if [[ "$apply_ok" != true ]] || ! config_policy_valid "$config_path"; then
+if [[ "$apply_ok" != true ]] \
+  || ! config_policy_valid "$config_path" "$ROOT_DIR/policy/providers.json" "$ROOT_DIR/policy/profiles.json"; then
   rollback
   if [[ "$local_daemon" == running || "$local_daemon" == ready ]]; then
     paseo reload --json --home "$paseo_home" >/dev/null 2>&1 || true

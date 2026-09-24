@@ -30,7 +30,8 @@ paseo-workflow bootstrap = reproducible distribution of that architecture
 Target experience:
 
 ```text
-Fresh WSL Ubuntu machine
+Fresh WSL Ubuntu Paseo host
+with user-installed/authenticated Codex and OpenCode prerequisites
         ↓
 git clone <paseo-workflow-repo>
         ↓
@@ -102,7 +103,10 @@ infrastructure.
 ## 4. V1 platform scope
 
 V1 supports WSL2, Ubuntu, Bash, apt-compatible dependencies, Node.js/npm, and
-the Paseo CLI/runtime. Do not expand V1 to macOS or native Linux yet.
+the Paseo CLI/runtime. Codex and OpenCode CLIs are external user/host-owned
+prerequisites: the user installs, updates, selects, and authenticates them.
+Bootstrap V1 only preflights their native Paseo diagnostics and availability.
+Do not expand V1 to macOS or native Linux yet.
 
 ## 5. Bootstrap architecture
 
@@ -120,6 +124,8 @@ Inspect actual host state
 Install required dependencies
         ↓
 Install/upgrade pinned supported Paseo version
+        ↓
+Preflight user-managed Codex/OpenCode runtimes and authentication
         ↓
 Inspect ~/.paseo/config.json
         ↓
@@ -171,6 +177,11 @@ The machine-level, idempotent bootstrap validates the platform; inspects the
 actual host; installs/checks dependencies and Paseo; backs up configuration;
 performs the ownership-aware merge; reconciles providers, profiles, and skills;
 reloads Paseo; runs `verify.sh`; and returns the final state.
+
+It must not install, upgrade, replace, or authenticate Codex/OpenCode provider
+runtimes. A missing external runtime is `BLOCKED` with an exact installation and
+PATH next action. An installed runtime requiring interactive login is
+`AUTH_REQUIRED`. A healthy existing runtime is reused unchanged.
 
 ### `verify.sh`
 
@@ -454,6 +465,12 @@ Ensure these native skills are installed and available:
 
 Use Paseo-native installation/settings. Do not create replacements.
 
+Current public Paseo documentation exposes the upstream
+`npx skills add getpaseo/paseo` installation flow and host startup refresh, but
+does not document a reproducible skill-version pin contract. V1 therefore
+records this upstream dependency and verifies installed skill presence; it does
+not vendor the skills or build a custom installer.
+
 ## 21. Authentication
 
 Authentication remains human-controlled where credentials or authorization are
@@ -462,7 +479,9 @@ copy tokens into repository configuration, write live auth state into records,
 or pretend authentication succeeded.
 
 Return `AUTH_REQUIRED` with an exact next action when user interaction is
-necessary, then allow verification to be rerun.
+necessary, then allow verification to be rerun. Missing external provider
+binaries are `BLOCKED`, not `AUTH_REQUIRED`; the bootstrap reports the exact
+host installation/PATH action and never installs them itself.
 
 ## 22. Bootstrap status
 

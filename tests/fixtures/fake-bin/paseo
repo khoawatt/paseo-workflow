@@ -5,7 +5,7 @@ state_dir="${FAKE_STATE_DIR:?}"
 mkdir -p "$state_dir"
 printf 'paseo %s\n' "$*" >>"$state_dir/calls.log"
 
-if [[ "${1:-}" == "--host" ]]; then
+if [[ "${1:-}" == "--host" || "${1:-}" == "--home" ]]; then
   shift 2
 fi
 
@@ -17,6 +17,49 @@ if [[ "${1:-}" == "--version" ]]; then
   else
     printf '%s\n' "${FAKE_PASEO_VERSION:-0.9.1}"
   fi
+  exit 0
+fi
+
+if [[ "${1:-}" == "provider" && "${2:-}" == "diagnostic" ]]; then
+  provider="${3:-unknown}"
+  family=codex
+  [[ "$provider" == opencode* ]] && family=opencode
+  if [[ "$family" == codex ]]; then
+    diagnostic_state="${FAKE_CODEX_DIAGNOSTIC_STATE:-${FAKE_DIAGNOSTIC_STATE:-ready}}"
+    label=Codex
+    command_name=codex
+  else
+    diagnostic_state="${FAKE_OPENCODE_DIAGNOSTIC_STATE:-${FAKE_DIAGNOSTIC_STATE:-ready}}"
+    label=OpenCode
+    command_name=opencode
+  fi
+  case "$diagnostic_state" in
+    ready)
+      diagnostic="$label
+  Resolved path: /usr/local/bin/$command_name
+  Version: 1.0.0
+  Status: Ready"
+      ;;
+    missing)
+      diagnostic="$label
+  Resolved path: not found
+  Status: Not installed"
+      ;;
+    auth_required)
+      diagnostic="$label
+  Resolved path: /usr/local/bin/$command_name
+  Version: 1.0.0
+  Status: Authentication required"
+      ;;
+    *)
+      diagnostic="$label
+  Resolved path: /usr/local/bin/$command_name
+  Version: 1.0.0
+  Status: Error: incompatible runtime"
+      ;;
+  esac
+  jq -n --arg provider "$provider" --arg diagnostic "$diagnostic" \
+    '{provider: $provider, diagnostic: $diagnostic}'
   exit 0
 fi
 

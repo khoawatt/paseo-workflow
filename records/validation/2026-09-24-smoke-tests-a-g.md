@@ -184,7 +184,8 @@ task-owned temporary directory was removed during post-validation cleanup.
 
 The complete project-agnostic Bootstrap V1 gate also passed:
 
-- bootstrap regression suite: 98 assertions, zero failures;
+- bootstrap regression suite after pre-merge corrections: 113 assertions, zero
+  failures;
 - live idempotency: two no-op reruns preserved the config SHA-256 and backup
   count;
 - secret-safety checks: PASS.

@@ -28,7 +28,8 @@ PROMPT/POLICY problem.
 - This repository owns the three required provider capability classes, owned
   profile routing/notes, MCP injection settings, native skill presence, safe
   merge rules, bootstrap verification, and sanitized evidence.
-- The human owns credentials, authentication, model/thinking preferences,
+- The human/host owns Codex and OpenCode installation, updates, executable
+  selection, credentials, authentication, model/thinking preferences,
   unrelated providers/profiles/config, and all high-impact approvals.
 
 Never commit live config, backups, credentials, auth state, agent/workspace/
@@ -36,8 +37,11 @@ session IDs, cookies, private keys, or unsanitized runtime records.
 
 ## Supported bootstrap target
 
-V1 supports WSL2 Ubuntu with Bash, `apt`, Node.js/npm, and Paseo. macOS and
-native Linux are intentionally out of scope.
+V1 supports WSL2 Ubuntu with Bash, `apt`, Node.js/npm, and Paseo. The user must
+first install and authenticate the external Codex and OpenCode CLIs on the
+daemon host. The bootstrap only preflights these runtimes and never installs,
+updates, or replaces them. macOS and native Linux are intentionally out of
+scope.
 
 From a fresh clone:
 
@@ -49,7 +53,9 @@ bash verify.sh
 
 Authentication is human-controlled. If the result is `AUTH_REQUIRED`, follow
 the provider's native login flow, then rerun `bash verify.sh`. Never collect or
-write credentials into this repository.
+write credentials into this repository. A missing provider binary is
+`BLOCKED`, with an external installation/PATH action rather than an attempted
+automatic install.
 
 ## Capability classes and Profiles
 
@@ -137,7 +143,14 @@ Bootstrap V1 operational validation.
   denied; validate the call.
 - Paseo/OpenCode protocol incompatibility may require a separately named,
   checksum-verified provider binary while preserving interactive OpenCode 2.x;
-  follow [OpenCode Provider Compatibility](docs/OPENCODE_COMPATIBILITY.md).
+  follow [OpenCode Provider Compatibility](docs/OPENCODE_COMPATIBILITY.md) only
+  after diagnostics confirm the mismatch. This remains a human-operated
+  troubleshooting procedure, not a default bootstrap action.
+- Paseo's documented skill installation is the upstream-managed
+  `npx skills add getpaseo/paseo` flow, and selected skills refresh on host
+  startup. No documented reproducible skill-version pin exists in the current
+  public docs, so V1 records this upstream dependency instead of maintaining a
+  custom skill installer or vendored copy.
 - Codex exposes no read-only mode on the inspected host; worker provider policy,
   role contract, and provider-native approvals/sandbox remain separate controls.
 

@@ -21,6 +21,7 @@
 - `paseoTools.enabled = false` is a Paseo catalog boundary, not an OS security sandbox.
 - High-impact/destructive operations, canonical merge, production changes, credentials, and architecture changes are human-gated.
 - `READY` means bootstrap-ready only. Bootstrap V1 `OPERATIONALLY VALIDATED` requires real-host Preflight plus smoke tests A-G, the regression suite, live idempotency, and secret-safety checks. Project-specific validation remains local to future adopters.
+- Codex/OpenCode runtimes and authentication are external user/host prerequisites. Bootstrap preflights and reuses them; it never installs, upgrades, replaces, or authenticates them.
 
 ## Observed runtime/docs differences to carry through implementation
 
@@ -256,7 +257,7 @@ Expected: nonzero because `verify.sh` is missing.
 
 - [ ] **Step 2: Implement native skill reconciliation in `install.sh`**
 
-When any required skill is absent, run the official command:
+When any required skill is absent, run the official upstream command:
 
 ```bash
 npx --yes skills add getpaseo/paseo
@@ -264,9 +265,11 @@ npx --yes skills add getpaseo/paseo
 
 Verify `/paseo`, `/paseo-handoff`, `/paseo-committee`, and `/paseo-advisor` from installed host skill roots. Do not copy or recreate skill content in this repository.
 
+The current public Paseo docs do not document a reproducible skill-version pin and state that selected skills refresh on host startup. Record this upstream dependency; do not vendor the skills or build a custom installer.
+
 - [ ] **Step 3: Implement `verify.sh`**
 
-Static checks validate policy/config and configured profiles; runtime checks use native provider CLI and daemon health. The report explicitly marks runtime profile discovery and capability calls as `not tested` until MCP host validation runs. Provider authentication failure maps to `AUTH_REQUIRED`; policy/config/runtime contradictions map to `BLOCKED`.
+Static checks validate every repository-owned provider/profile policy field; runtime checks use native provider diagnostics/status and daemon health. The report explicitly marks runtime profile discovery and capability calls as `not tested` until MCP host validation runs. Missing external runtime maps to `BLOCKED` with an exact installation/PATH action; an installed runtime requiring interactive login maps to `AUTH_REQUIRED`; policy/config/runtime contradictions map to `BLOCKED`.
 
 - [ ] **Step 4: Run verification fixtures and suite**
 

@@ -99,6 +99,38 @@ assert_eq '1' "$rollback_status" 'reload failure returns BLOCKED/nonzero'
 assert_eq "$rollback_sha" "$(sha256sum "$rollback_home/.paseo/config.json" | awk '{print $1}')" \
   'reload failure restores the exact original config'
 
+missing_provider_home="$TEMP_ROOT/missing-provider"
+set +e
+FAKE_CODEX_DIAGNOSTIC_STATE=missing run_install "$missing_provider_home" \
+  >"$missing_provider_home-output" 2>&1
+missing_provider_status=$?
+set -e
+assert_eq '1' "$missing_provider_status" 'missing external provider runtime returns BLOCKED'
+if rg -q 'Install the Codex CLI' "$missing_provider_home-output"; then
+  TESTS_RUN=$((TESTS_RUN + 1)); pass 'missing provider reports exact user-owned install action'
+else
+  fail 'missing provider reports exact user-owned install action'
+fi
+if [[ -f "$missing_provider_home/state/calls.log" ]] \
+  && rg -q 'npm install.*(@openai/codex|opencode)' "$missing_provider_home/state/calls.log"; then
+  fail 'bootstrap never installs an external provider runtime'
+else
+  TESTS_RUN=$((TESTS_RUN + 1)); pass 'bootstrap never installs an external provider runtime'
+fi
+
+auth_provider_home="$TEMP_ROOT/auth-provider"
+set +e
+FAKE_CODEX_DIAGNOSTIC_STATE=auth_required run_install "$auth_provider_home" \
+  >"$auth_provider_home-output" 2>&1
+auth_provider_status=$?
+set -e
+assert_eq '2' "$auth_provider_status" 'installed provider requiring login returns AUTH_REQUIRED'
+if rg -q 'codex login' "$auth_provider_home-output"; then
+  TESTS_RUN=$((TESTS_RUN + 1)); pass 'authentication status reports exact interactive next action'
+else
+  fail 'authentication status reports exact interactive next action'
+fi
+
 missing_home="$TEMP_ROOT/missing"
 FAKE_PASEO_VERSION=missing run_install "$missing_home" >/dev/null || fail 'missing Paseo is installed at the pinned version'
 if rg -q 'npm install -g @getpaseo/cli@0.9.1' "$missing_home/state/calls.log"; then

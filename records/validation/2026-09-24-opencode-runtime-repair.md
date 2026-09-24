@@ -1,5 +1,10 @@
 # OpenCode Runtime Repair Evidence
 
+This record describes a human-operated host repair performed during validation.
+It is not a default `paseo-workflow` bootstrap action. Provider runtime
+installation, updates, executable selection, and authentication remain external
+user/host responsibilities.
+
 Date: 2026-09-24  
 Host: WSL2 Ubuntu, sanitized  
 Classification: `MODEL/PROVIDER GAP`  

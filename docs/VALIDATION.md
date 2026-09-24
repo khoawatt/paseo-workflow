@@ -24,6 +24,17 @@ daemon availability as implemented by the verifier. MCP Profile discovery and
 agent capability calls remain explicitly `not tested` until exercised with new
 live sessions.
 
+Provider classification uses native `paseo provider diagnostic <provider>
+--json` where practical, then correlates required capability-class status from
+`provider ls`:
+
+- missing external binary/PATH resolution → `BLOCKED` with install/PATH action;
+- installed runtime requiring interactive login → `AUTH_REQUIRED`;
+- ready external runtime and available capability classes → eligible for
+  `READY`;
+- installed but unhealthy/incompatible runtime → `BLOCKED` with diagnostic or
+  conditional compatibility guidance.
+
 Evidence labels in reports:
 
 - `implemented`: repository code exists.

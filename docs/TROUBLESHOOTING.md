@@ -14,8 +14,19 @@ infrastructure.
 
 ## Common results
 
-`AUTH_REQUIRED`: complete native provider login, then rerun `bash verify.sh`.
-Do not store auth material in this repository.
+`AUTH_REQUIRED`: the provider binary is installed, but native diagnostics show
+that interactive login is required. Complete provider login on the daemon host,
+then rerun `bash verify.sh`. Do not store auth material in this repository.
+
+`BLOCKED` with a missing Codex/OpenCode runtime: install that CLI externally on
+the daemon host, ensure a fresh login shell and the Paseo daemon can resolve it,
+authenticate it, then rerun. `paseo-workflow` never installs, updates, or
+replaces provider CLIs. Inspect the exact daemon view with:
+
+```bash
+paseo provider diagnostic codex --json
+paseo provider diagnostic opencode --json
+```
 
 `BLOCKED` after config apply: the installer restores the timestamped backup.
 Check the printed backup SHA, daemon health, and verifier blockers. Never delete
@@ -35,7 +46,8 @@ message: compare the Paseo-bundled OpenCode SDK with the resolved OpenCode
 binary. Do not replace the user's interactive 2.x binary. Follow
 [OpenCode Provider Compatibility](OPENCODE_COMPATIBILITY.md) to test and pin a
 separate provider binary, preserve the terminal profile, and restart only when
-the OpenCode server manager demonstrably retained old runtime settings.
+the OpenCode server manager demonstrably retained old runtime settings. The
+bootstrap does not execute this repair automatically.
 
 `PROJECT_RUNTIME_PENDING`: inspect the real project and human-review the
 smallest documented `paseo.json`. Do not infer commands, ports, or services from

@@ -20,11 +20,30 @@ Paseo version: `0.9.1`
 - Native host verifier: implemented, fixture-tested, and runtime-tested.
 - Read-only project inspector: implemented and fixture-tested.
 - Operator/bootstrap documentation: implemented and secret-scanned.
-- Fixture suite: 98 assertions passed, zero failures.
+- Fixture suite after pre-merge corrections: 113 assertions passed, zero
+  failures.
 - Secret safety: PASS; repository contains no credentials, live config backup,
   runtime agent/workspace/session IDs, or private auth state.
 - Complete operational gate: PASS — Preflight, A-G, regression suite, live
   idempotency, and secret-safety checks all have observable evidence.
+
+Pre-merge correction validation also passed:
+
+- missing external runtime → fixture-tested `BLOCKED` with exact install/PATH
+  action and no provider install attempt;
+- installed runtime requiring interactive login → fixture-tested
+  `AUTH_REQUIRED`;
+- installed but unhealthy runtime → fixture-tested `BLOCKED` with diagnostic
+  guidance;
+- all repository-owned provider fields and profile identity/name/notes/provider
+  policy → fixture-tested;
+- targeted live `verify.sh --json` → `READY`, with Codex/OpenCode diagnostics
+  both `ready`;
+- targeted live `install.sh --dry-run` → converged, no backup or config write.
+
+Smoke tests A-G were not rerun because these corrections changed preflight,
+classification, verification coverage, and documentation only; the validated
+orchestration behavior and capability policy did not change.
 
 ## Host policy
 
@@ -37,10 +56,14 @@ Runtime-tested PASS:
 - Lead can create native workspaces and agents;
 - both worker families retain normal repository capability and cannot create
   agents through the native Paseo catalog.
+- native provider diagnostics classify both external runtimes as `ready`;
+- a live installer dry-run returned converged configuration and `READY` without
+  writing a backup or changing host configuration.
 
 Required capability-class provider IDs already existed and were reconciled;
-none required creation during the final live apply. The host-owned base
-`opencode` provider command was updated to a dedicated compatibility binary.
+none required creation during the final live apply. Provider runtime
+installation, upgrades, executable selection, and authentication remain
+external user/host responsibilities.
 
 ## OpenCode runtime
 
@@ -52,9 +75,10 @@ Runtime-tested PASS:
 - provider diagnostic is Ready and model discovery succeeds;
 - the existing terminal profile and worker tool policy were preserved.
 
-The repair is documented in [OpenCode Runtime Repair
-Evidence](2026-09-24-opencode-runtime-repair.md). It is a host/provider
-compatibility override, not a new architecture component.
+The earlier human-operated repair is documented in [OpenCode Runtime Repair
+Evidence](2026-09-24-opencode-runtime-repair.md). It is a conditional
+host/provider compatibility override, not a default bootstrap responsibility
+or a new architecture component.
 
 ## Agent Profiles and skills
 
@@ -66,18 +90,22 @@ Runtime MCP discovery returned the five required profiles:
 - Review -> `codex-worker`;
 - Specialist -> `codex-worker`.
 
-Planning and Review provider boundaries were reconciled while their existing
-model, thinking, mode, and notes were preserved. Native skills `/paseo`,
-`/paseo-handoff`, `/paseo-advisor`, and `/paseo-committee` are installed;
-handoff/advisor/committee behavior was runtime-tested in smoke E.
+Repository-owned profile names, notes, and provider policy were reconciled.
+Planning and Review required provider-boundary changes, while compatible
+user-owned model, thinking, and mode preferences were preserved. Native skills
+`/paseo`, `/paseo-handoff`, `/paseo-advisor`, and `/paseo-committee` are
+installed; handoff/advisor/committee behavior was runtime-tested in smoke E.
+Their installation/refresh is an unpinned upstream Paseo dependency because the
+current public docs expose no reproducible skill-version pin contract.
 
 ## Backup, merge, and idempotency
 
 - Candidate was inspected before live mutation.
 - One mode-0600 timestamped backup was created before bootstrap config write.
 - Merge changed only the two required profile provider fields and preserved
-  credentials, unknown fields, unrelated config, profiles, providers, and user
-  model/thinking preferences.
+  credentials, unknown fields, unrelated config, profiles/providers, and user
+  model/thinking preferences. Repository-owned profile names/notes and provider
+  fields were reconciled; their already-canonical values required no live diff.
 - Two immediate live reruns preserved the exact config SHA-256 and created no
   additional backup.
 - Atomic rollback behavior is fixture-tested.
@@ -123,6 +151,10 @@ installed compatibility provider binary were retained for rollback.
 9. The approved architecture adjustment separates Bootstrap V1 validation from
    project-specific adoption. No application repository is required for the
    bootstrap gate; future project runtime is derived and validated locally.
+10. Current public Paseo skill documentation provides an upstream install and
+    startup-refresh flow but no reproducible skill-version pin contract. V1
+    documents this dependency and does not vendor skills or build a custom
+    installer.
 
 ## Architecture impact
 
