@@ -1,0 +1,18 @@
+{
+  "models": [
+    {
+      "id": "opencode/muse-spark-1.3-contributor-free",
+      "thinkingOptions": [
+        {"id": "default"},
+        {"id": "high"}
+      ]
+    },
+    {
+      "id": "opencode/generic-review",
+      "thinkingOptions": [
+        {"id": "default"},
+        {"id": "high"}
+      ]
+    }
+  ]
+}

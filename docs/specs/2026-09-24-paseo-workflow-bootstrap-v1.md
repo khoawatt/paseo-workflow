@@ -30,7 +30,8 @@ paseo-workflow bootstrap = reproducible distribution of that architecture
 Target experience:
 
 ```text
-Fresh WSL Ubuntu machine
+Fresh WSL Ubuntu Paseo host
+with user-installed/authenticated Codex and OpenCode prerequisites
         ↓
 git clone <paseo-workflow-repo>
         ↓
@@ -48,8 +49,11 @@ READY / AUTH_REQUIRED / BLOCKED
         ↓
 Core smoke tests A-G
         ↓
+Bootstrap regression suite + idempotency + secret safety
+        ↓
 OPERATIONALLY VALIDATED
-only if all required tests actually pass
+for the bootstrap/orchestration distribution only,
+and only if the complete gate actually passes
 ```
 
 ## 2. Authority order
@@ -99,7 +103,10 @@ infrastructure.
 ## 4. V1 platform scope
 
 V1 supports WSL2, Ubuntu, Bash, apt-compatible dependencies, Node.js/npm, and
-the Paseo CLI/runtime. Do not expand V1 to macOS or native Linux yet.
+the Paseo CLI/runtime. Codex and OpenCode CLIs are external user/host-owned
+prerequisites: the user installs, updates, selects, and authenticates them.
+Bootstrap V1 only preflights their native Paseo diagnostics and availability.
+Do not expand V1 to macOS or native Linux yet.
 
 ## 5. Bootstrap architecture
 
@@ -117,6 +124,8 @@ Inspect actual host state
 Install required dependencies
         ↓
 Install/upgrade pinned supported Paseo version
+        ↓
+Preflight user-managed Codex/OpenCode runtimes and authentication
         ↓
 Inspect ~/.paseo/config.json
         ↓
@@ -169,6 +178,11 @@ actual host; installs/checks dependencies and Paseo; backs up configuration;
 performs the ownership-aware merge; reconciles providers, profiles, and skills;
 reloads Paseo; runs `verify.sh`; and returns the final state.
 
+It must not install, upgrade, replace, or authenticate Codex/OpenCode provider
+runtimes. A missing external runtime is `BLOCKED` with an exact installation and
+PATH next action. An installed runtime requiring interactive login is
+`AUTH_REQUIRED`. A healthy existing runtime is reused unchanged.
+
 ### `verify.sh`
 
 Verification must use actual Paseo state:
@@ -214,8 +228,15 @@ target repository exists?
 ```
 
 Do not assume test/dev commands, ports, services, or frontend/backend topology.
-Do not invent `fea-lms-rfbe/paseo.json` before that repository exists and its
-real scripts are inspectable.
+Do not invent `<repo>/paseo.json` or any project runtime before the target
+repository exists and its real scripts are inspectable.
+
+Bootstrap validation is project-agnostic. It proves host bootstrap,
+provider/profile policy, native orchestration primitives, worktree isolation,
+review flow, lifecycle controls, skills, permissions, idempotency,
+preservation, and secret safety. Project-specific validation occurs later and
+locally when an actual repository adopts this bootstrap; it is not a
+prerequisite for Bootstrap V1 operational validation.
 
 ## 8. Configuration ownership
 
@@ -444,6 +465,12 @@ Ensure these native skills are installed and available:
 
 Use Paseo-native installation/settings. Do not create replacements.
 
+Current public Paseo documentation exposes the upstream
+`npx skills add getpaseo/paseo` installation flow and host startup refresh, but
+does not document a reproducible skill-version pin contract. V1 therefore
+records this upstream dependency and verifies installed skill presence; it does
+not vendor the skills or build a custom installer.
+
 ## 21. Authentication
 
 Authentication remains human-controlled where credentials or authorization are
@@ -452,7 +479,9 @@ copy tokens into repository configuration, write live auth state into records,
 or pretend authentication succeeded.
 
 Return `AUTH_REQUIRED` with an exact next action when user interaction is
-necessary, then allow verification to be rerun.
+necessary, then allow verification to be rerun. Missing external provider
+binaries are `BLOCKED`, not `AUTH_REQUIRED`; the bootstrap reports the exact
+host installation/PATH action and never installs them itself.
 
 ## 22. Bootstrap status
 
@@ -478,8 +507,11 @@ component, evidence, and recommended next action.
 BOOTSTRAP READY ≠ OPERATIONALLY VALIDATED
 ```
 
-The architecture becomes `OPERATIONALLY VALIDATED` only after the required
-real-host V0.2 smoke tests pass. Otherwise report:
+Bootstrap V1 becomes `OPERATIONALLY VALIDATED` only after the required
+real-host V0.2 smoke tests, bootstrap regression suite, live idempotency, and
+secret-safety checks pass. This classification applies only to the bootstrap
+and orchestration distribution. It does not validate project runtime for any
+future adopting repository. Otherwise report:
 
 ```text
 DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING
@@ -690,7 +722,7 @@ Observed runtime/docs vs V0.2 mismatches
 
 Architecture changes required, if any
 
-Remaining project-runtime work
+Future adopter/project-runtime considerations, if any
 
 Next recommended action
 ```
@@ -700,9 +732,21 @@ tested, and not-tested/blocked. Do not claim success from static inspection.
 
 ## 37. Operational-validation gate
 
-Only report `OPERATIONALLY VALIDATED` when Preflight and A-G all pass with real,
-observable host evidence. Otherwise report `DESIGN COMPLETE / OPERATIONAL
-VALIDATION PENDING` or the appropriate blocked/failure status.
+Only report `OPERATIONALLY VALIDATED` for Bootstrap V1 when all of the following
+pass with observable evidence:
+
+```text
+Preflight
++ A + B + C + D + E + F + G
++ bootstrap regression suite
++ live idempotency
++ secret-safety checks
+```
+
+This classification applies only to the bootstrap/orchestration distribution.
+Project-specific validation remains local to each future adopting repository.
+Otherwise report `DESIGN COMPLETE / OPERATIONAL VALIDATION PENDING` or the
+appropriate blocked/failure status.
 
 ## 38. V1 non-goals
 
@@ -739,7 +783,10 @@ or project-runtime assumptions for uninspected repositories.
 - The bootstrap must be idempotent.
 - Project runtime must be derived from the real project, never guessed.
 - `READY` means bootstrap-ready, not operationally validated.
-- Core smoke tests A-G remain the operational-validation gate.
+- Preflight, A-G, the bootstrap regression suite, live idempotency, and
+  secret-safety checks form the Bootstrap V1 operational-validation gate.
+- Project-specific validation is separate, local to the adopting repository,
+  and not a Bootstrap V1 completion prerequisite.
 
 Implement against these constraints using the smallest Paseo-native solution
 possible.

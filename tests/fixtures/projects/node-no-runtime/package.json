@@ -1,0 +1,8 @@
+{
+  "name": "fixture-node-pending",
+  "private": true,
+  "scripts": {
+    "check": "eslint .",
+    "test": "vitest run"
+  }
+}

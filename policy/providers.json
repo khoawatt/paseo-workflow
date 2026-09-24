@@ -1,0 +1,20 @@
+{
+  "codex-lead": {
+    "extends": "codex",
+    "label": "Codex Lead"
+  },
+  "codex-worker": {
+    "extends": "codex",
+    "label": "Codex Worker",
+    "paseoTools": {
+      "enabled": false
+    }
+  },
+  "opencode-worker": {
+    "extends": "opencode",
+    "label": "OpenCode Worker",
+    "paseoTools": {
+      "enabled": false
+    }
+  }
+}

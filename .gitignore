@@ -11,3 +11,6 @@ tmp/
 .paseo/
 config.json.backup-*
 records/private/
+
+# Isolated implementation worktrees
+.worktrees/

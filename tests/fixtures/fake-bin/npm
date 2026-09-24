@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'npm %s\n' "$*" >>"${FAKE_STATE_DIR:?}/calls.log"
+if [[ "$*" == *'install -g @getpaseo/cli@0.9.1'* ]]; then
+  touch "${FAKE_STATE_DIR:?}/installed"
+fi

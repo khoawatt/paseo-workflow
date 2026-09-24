@@ -1,0 +1,94 @@
+{
+  "$schema": "https://paseo.sh/schemas/paseo.config.v1.json",
+  "version": 1,
+  "daemon": {
+    "listen": "127.0.0.1:6767",
+    "mcp": {
+      "enabled": false,
+      "injectIntoAgents": false,
+      "unknownMcpField": "keep-me"
+    },
+    "unknownDaemon": {
+      "keep": true
+    },
+    "agentProfiles": [
+      {
+        "id": "design-agent-lead-v02",
+        "name": "Old Lead Name",
+        "provider": "codex-lead",
+        "model": "gpt-5.6-sol",
+        "modeId": "auto-review",
+        "thinkingOptionId": "high",
+        "notes": "old"
+      },
+      {
+        "id": "design-agent-planning-research-v02",
+        "name": "Planning / Research",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "modeId": "auto-review",
+        "thinkingOptionId": "high",
+        "notes": "old"
+      },
+      {
+        "id": "design-agent-implementation-v02",
+        "name": "Implementation",
+        "provider": "opencode-worker",
+        "model": "opencode/muse-spark-1.3-contributor-free",
+        "modeId": "build",
+        "thinkingOptionId": "default",
+        "notes": "old"
+      },
+      {
+        "id": "design-agent-review-v02",
+        "name": "Review",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "modeId": "auto-review",
+        "thinkingOptionId": "high",
+        "notes": "old"
+      },
+      {
+        "id": "design-agent-specialist-v02",
+        "name": "Specialist",
+        "provider": "codex-worker",
+        "model": "gpt-6-sol",
+        "modeId": "auto-review",
+        "thinkingOptionId": "high",
+        "featureValues": {"fast_mode": false},
+        "notes": "old"
+      },
+      {
+        "id": "personal-profile",
+        "name": "Personal",
+        "provider": "opencode",
+        "model": "personal/model",
+        "notes": "unrelated"
+      }
+    ]
+  },
+  "agents": {
+    "providers": {
+      "codex-lead": {
+        "extends": "codex",
+        "label": "Old Lead",
+        "description": "keep this user description",
+        "paseoTools": {"enabled": false}
+      },
+      "codex-worker": {
+        "extends": "codex",
+        "label": "Old Worker",
+        "env": {"EXAMPLE_TOKEN": "fixture-private-value"},
+        "paseoTools": {"disabledTools": ["create_agent"]}
+      },
+      "personal-provider": {
+        "extends": "acp",
+        "label": "Personal Provider",
+        "command": ["personal-agent"]
+      }
+    }
+  },
+  "unknownRoot": {
+    "nested": [1, 2, 3]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "daemon": {
+    "agentProfiles": [
+      {
+        "id": "design-agent-planning-research-v02",
+        "name": "Planning / Research",
+        "provider": "codex",
+        "model": "unavailable-model",
+        "thinkingOptionId": "high"
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "daemon": {
+    "relay": {"enabled": false}
+  },
+  "agents": {
+    "providers": {
+      "personal-provider": {
+        "extends": "acp",
+        "label": "Personal Provider",
+        "command": ["personal-agent"]
+      }
+    }
+  }
+}
