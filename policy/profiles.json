@@ -1,0 +1,60 @@
+{
+  "version": "0.2",
+  "profiles": [
+    {
+      "id": "design-agent-lead-v02",
+      "name": "Lead",
+      "preferredProvider": "codex-lead",
+      "allowedProviders": ["codex-lead"],
+      "defaultModeByProvider": {
+        "codex-lead": "auto-review"
+      },
+      "notes": "Use as the primary technical orchestrator for repository understanding, task decomposition, profile selection, Paseo delegation, cross-worker coordination, review and rework loops, risk escalation, and final synthesis. Prefer direct tools for small work; create subagents when isolation, parallelism, independent review, provider capability, or context separation adds material value."
+    },
+    {
+      "id": "design-agent-planning-research-v02",
+      "name": "Planning / Research",
+      "preferredProvider": "opencode-worker",
+      "allowedProviders": ["opencode-worker", "codex-worker"],
+      "defaultModeByProvider": {
+        "opencode-worker": "plan",
+        "codex-worker": "auto-review"
+      },
+      "notes": "Use for repository exploration, architecture investigation, dependency tracing, test analysis, documentation research, root-cause hypotheses, and comparing implementation approaches. Default to read-only work. Do not edit source files or create subagents. Return evidence, relevant files, uncertainty, risks, blockers, and a recommended next action."
+    },
+    {
+      "id": "design-agent-implementation-v02",
+      "name": "Implementation",
+      "preferredProvider": "codex-worker",
+      "allowedProviders": ["codex-worker", "opencode-worker"],
+      "defaultModeByProvider": {
+        "codex-worker": "auto-review",
+        "opencode-worker": "build"
+      },
+      "notes": "Use for scoped code changes after the objective and acceptance criteria are clear. For independent write work, operate in the assigned Paseo worktree, stay inside scope, run focused verification, do not create subagents, and do not merge the canonical branch. Report changed files, commands and tests run, risks, blockers, and next action."
+    },
+    {
+      "id": "design-agent-review-v02",
+      "name": "Review",
+      "preferredProvider": "opencode-worker",
+      "allowedProviders": ["opencode-worker", "codex-worker"],
+      "preferDifferentFromProfileId": "design-agent-implementation-v02",
+      "defaultModeByProvider": {
+        "opencode-worker": "plan",
+        "codex-worker": "auto-review"
+      },
+      "notes": "Use for fresh-context independent review of the exact implementation state. Check correctness, acceptance criteria, regressions, missing tests, security and reliability concerns, and unnecessary complexity. Do not modify code by default and do not create subagents. Return ACCEPT or REQUEST_CHANGES with concrete evidence, reviewed state, required actions, verification notes, and residual risks."
+    },
+    {
+      "id": "design-agent-specialist-v02",
+      "name": "Specialist",
+      "preferredProvider": "codex-worker",
+      "allowedProviders": ["codex-worker", "opencode-worker"],
+      "defaultModeByProvider": {
+        "codex-worker": "auto-review",
+        "opencode-worker": "plan"
+      },
+      "notes": "Use only when domain-specific reasoning materially improves the outcome, such as security, database, performance, cloud, frontend, or migration work. Default to analysis-first and read-only. Give write scope only when explicitly required. Do not create subagents. Return domain findings, constraints, risks, recommendation, blockers, and next action."
+    }
+  ]
+}
