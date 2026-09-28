@@ -113,6 +113,17 @@ assert_eq "$validation_sha" "$(sha256sum "$validation_home/.paseo/config.json" |
 assert_eq '0' "$(find "$validation_home/.paseo" -maxdepth 1 -name 'config.json.backup-bootstrap-*' | wc -l)" \
   'candidate validation failure creates no unnecessary backup'
 
+invalid_config_home="$TEMP_ROOT/invalid-config"
+mkdir -p "$invalid_config_home/.paseo"
+printf '{invalid\n' >"$invalid_config_home/.paseo/config.json"
+set +e
+FAKE_HEALTHY=1 run_install "$invalid_config_home" >/dev/null 2>&1
+invalid_config_status=$?
+set -e
+assert_eq '2' "$invalid_config_status" 'invalid existing config preserves usage/config exit status 2'
+assert_eq '{invalid' "$(tr -d '\n' <"$invalid_config_home/.paseo/config.json")" \
+  'invalid existing config is never modified'
+
 missing_provider_home="$TEMP_ROOT/missing-provider"
 set +e
 FAKE_CODEX_DIAGNOSTIC_STATE=missing run_install "$missing_provider_home" \

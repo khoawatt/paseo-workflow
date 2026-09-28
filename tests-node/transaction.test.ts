@@ -16,7 +16,10 @@ test("successful transaction writes private config and backup", async () => {
   const { path, original } = await fixture();
   const result = await applyConfigTransaction({ livePath: path, candidate: "{\"after\":true}\n", validateCandidate: async () => {}, applyRuntime: async () => {}, verifyAppliedState: async () => "READY", now: () => new Date("2026-09-28T00:00:00Z") });
   assert.equal(result.changed, true); assert.equal(await readFile(path, "utf8"), "{\"after\":true}\n"); assert.equal((await stat(path)).mode & 0o777, 0o600);
-  if (result.changed) assert.equal(await readFile(result.backupPath!, "utf8"), original);
+  if (result.changed) {
+    assert.equal(await readFile(result.backupPath!, "utf8"), original);
+    assert.equal((await stat(result.backupPath!)).mode & 0o777, 0o600);
+  }
 });
 
 test("validation failure does not write or back up", async () => {

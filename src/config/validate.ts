@@ -1,9 +1,10 @@
 import type { JsonObject, ProfilesPolicy, ProviderPolicy } from "../domain/types.ts";
+import { stableJson } from "../core/filesystem.ts";
 
 const object = (value: unknown): JsonObject | undefined => value !== null && typeof value === "object" && !Array.isArray(value) ? value as JsonObject : undefined;
 
 function deepEqual(left: unknown, right: unknown): boolean {
-  return JSON.stringify(left) === JSON.stringify(right);
+  return stableJson(left) === stableJson(right);
 }
 
 export function configPolicyValid(configValue: unknown, providersPolicy: ProviderPolicy, profilesPolicy: ProfilesPolicy): boolean {

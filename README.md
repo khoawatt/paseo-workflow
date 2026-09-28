@@ -46,17 +46,17 @@ project-runtime validation.
 ## Commands
 
 ```bash
-paseo-workflow install --dry-run
-paseo-workflow install
-paseo-workflow verify
-paseo-workflow verify --json
-paseo-workflow project inspect /path/to/repository
+node src/cli.ts install --dry-run
+node src/cli.ts install
+node src/cli.ts verify
+node src/cli.ts verify --json
+node src/cli.ts project inspect /path/to/repository
 npm run check
 ```
 
-From a clone, `node src/cli.ts ...` is equivalent. The legacy script names are
-thin compatibility wrappers; `bootstrap.sh` only checks the Node baseline and
-transfers control to the CLI.
+The package exposes the same commands as the `paseo-workflow` bin when installed
+or linked. The legacy script names are thin compatibility wrappers;
+`bootstrap.sh` only checks the Node baseline and transfers control to the CLI.
 
 `project inspect` is read-only in V1. It reports an existing `paseo.json` or
 literal commands found in real manifests; it never invents project scripts,

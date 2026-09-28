@@ -110,7 +110,11 @@ export async function installCommand(args: string[], root: string, env = process
   ]);
   validateProviderPolicy(providersRaw); validateProfilesPolicy(profilesRaw);
   const configPath = resolve(home, "config.json");
-  const current = await pathExists(configPath) ? await readJson(configPath) : {};
+  let current: unknown = {};
+  if (await pathExists(configPath)) {
+    try { current = await readJson(configPath); }
+    catch { process.stderr.write("invalid input config\n"); return 2; }
+  }
   const reconciled = reconcileConfig({ currentConfig: current, providerPolicy: providersRaw as ProviderPolicy, profilePolicy: profilesRaw as ProfilesPolicy, codexModels, opencodeModels });
   if (reconciled.status === "BLOCKED") { process.stderr.write(`status=BLOCKED classification=MODEL/PROVIDER GAP profiles=${reconciled.blockers.map((item) => item.profileId).join(",")}\n`); return 3; }
   process.stdout.write(`status=RECONCILED changed=${reconciled.changed} providers=codex-lead,codex-worker,opencode-worker profiles=design-agent-lead-v02,design-agent-planning-research-v02,design-agent-implementation-v02,design-agent-review-v02,design-agent-specialist-v02\n`);

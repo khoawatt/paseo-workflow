@@ -101,5 +101,5 @@ The existing disposable smoke fixture provides the real Git and worktree
 evidence required by B, C, and D; no application repository or duplicate
 fixture is required. When the complete gate passes, `OPERATIONALLY VALIDATED`
 applies only to the bootstrap/orchestration distribution. A future adopting
-project runs `paseo-workflow project inspect <repo>`, derives runtime from that inspected
+project runs `node src/cli.ts project inspect <repo>`, derives runtime from that inspected
 repository, and performs project-specific validation locally.

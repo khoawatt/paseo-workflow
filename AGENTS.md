@@ -54,7 +54,7 @@ node src/cli.ts verify
 ```
 
 Authentication is human-controlled. If the result is `AUTH_REQUIRED`, follow
-the provider's native login flow, then rerun `paseo-workflow verify`. Never collect or
+the provider's native login flow, then rerun `node src/cli.ts verify`. Never collect or
 write credentials into this repository. A missing provider binary is
 `BLOCKED`, with an external installation/PATH action rather than an attempted
 automatic install.
@@ -138,7 +138,7 @@ orchestration distribution.
 
 ## Project runtime
 
-Run `paseo-workflow project inspect <repo>`. V1 never writes `paseo.json`. It returns
+Run `node src/cli.ts project inspect <repo>`. V1 never writes `paseo.json`. It returns
 `PROJECT_RUNTIME_READY`, `PROJECT_RUNTIME_PENDING`, or `BLOCKED` based on the
 actual repository. Human-review any proposed setup, teardown, service, command,
 and port before adding project runtime configuration. Project-specific

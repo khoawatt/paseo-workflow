@@ -16,7 +16,7 @@ infrastructure.
 
 `AUTH_REQUIRED`: the provider binary is installed, but native diagnostics show
 that interactive login is required. Complete provider login on the daemon host,
-then rerun `paseo-workflow verify`. Do not store auth material in this repository.
+then rerun `node src/cli.ts verify`. Do not store auth material in this repository.
 
 `BLOCKED` with a missing Codex/OpenCode runtime: install that CLI externally on
 the daemon host, ensure a fresh login shell and the Paseo daemon can resolve it,
@@ -49,7 +49,7 @@ separate provider binary, preserve the terminal profile, and restart only when
 the OpenCode server manager demonstrably retained old runtime settings. The
 bootstrap does not execute this repair automatically.
 
-`PROJECT_RUNTIME_PENDING`: run `paseo-workflow project inspect <repo>` and human-review the
+`PROJECT_RUNTIME_PENDING`: run `node src/cli.ts project inspect <repo>` and human-review the
 smallest documented `paseo.json`. Do not infer commands, ports, or services from
 project names.
 

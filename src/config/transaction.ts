@@ -1,4 +1,4 @@
-import { chmod, copyFile, mkdir, readFile, rm } from "node:fs/promises";
+import { chmod, mkdir, open, readFile, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { atomicWritePrivate, pathExists, sha256File } from "../core/filesystem.ts";
 
@@ -30,7 +30,8 @@ export async function applyConfigTransaction(options: {
   if (existing) {
     const timestamp = (options.now?.() ?? new Date()).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
     backupPath = resolve(dirname(options.livePath), `config.json.backup-bootstrap-${timestamp}`);
-    await copyFile(options.livePath, backupPath);
+    const backup = await open(backupPath, "wx", 0o600);
+    try { await backup.writeFile(existing); await backup.sync(); } finally { await backup.close(); }
     await chmod(backupPath, 0o600);
     backupSha256 = await sha256File(backupPath);
     options.onBackup?.(backupPath, backupSha256);
