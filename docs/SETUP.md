@@ -3,7 +3,8 @@
 ## Prerequisites
 
 - WSL2 running Ubuntu.
-- Bash and an `apt`-compatible environment.
+- Node.js 24 LTS, version 24.21.0 or newer (Node 26 is compatibility-tested).
+- Bash only for the optional bootstrap and compatibility wrappers.
 - Paseo-compatible Codex CLI installed on the daemon host and authenticated by
   the user (`codex login`).
 - Paseo-compatible OpenCode CLI installed on the daemon host with its required
@@ -20,8 +21,9 @@ Clone and inspect before applying:
 ```bash
 git clone https://github.com/khoawatt/paseo-workflow.git
 cd paseo-workflow
-bash install.sh --dry-run
-bash install.sh
+npm ci
+node src/cli.ts install --dry-run
+node src/cli.ts install
 ```
 
 The installer performs platform/dependency checks, installs or upgrades the
@@ -29,7 +31,7 @@ pinned supported Paseo version, preflights the externally managed provider
 runtimes with native diagnostics, verifies native Paseo skills, discovers real
 provider model catalogs, reconciles a candidate config, validates it with the
 native CLI, backs up a changed config, atomically applies it, reloads or starts
-the correct daemon topology, and runs `verify.sh`.
+the correct daemon topology, and runs the Node verifier.
 
 It will not automatically downgrade a newer Paseo version. That requires a
 human decision after comparing current runtime/docs with the V0.2 assumptions.
@@ -42,7 +44,7 @@ repository files. A missing binary is instead `BLOCKED` and reports the exact
 external installation/PATH action. Then run:
 
 ```bash
-bash verify.sh
+node src/cli.ts verify
 ```
 
 ## Backup and rollback
@@ -64,8 +66,8 @@ Backups are host state and must never be copied into this repository.
 Run the installer repeatedly only after the first result is understood:
 
 ```bash
-bash install.sh
-bash install.sh
+node src/cli.ts install
+node src/cli.ts install
 ```
 
 The second successful run must report a converged config, preserve its SHA, and

@@ -3,10 +3,15 @@
 ## Repository fixture tests
 
 ```bash
-bash tests/test.sh
+npm run typecheck
+npm run test:node
+npm run test:legacy
+npm run check
 ```
 
-These isolated tests cover policy, config preservation/merge, credentials and
+The Node tests cover pure reconciliation, shell-free argument boundaries, and
+transaction failure injection. The compatibility fixtures cover policy,
+config preservation/merge, credentials and
 unknown fields, model compatibility, backups, atomic rollback, idempotency,
 status reporting, native skill presence, project inspection, and secret safety.
 They use synthetic homes and fake runtime responses. They do not authenticate
@@ -15,8 +20,8 @@ providers or prove live orchestration.
 ## Real-host bootstrap checks
 
 ```bash
-bash verify.sh
-bash verify.sh --json
+node src/cli.ts verify
+node src/cli.ts verify --json
 ```
 
 `READY` proves bootstrap prerequisites, required policy, skills, providers, and
@@ -96,5 +101,5 @@ The existing disposable smoke fixture provides the real Git and worktree
 evidence required by B, C, and D; no application repository or duplicate
 fixture is required. When the complete gate passes, `OPERATIONALLY VALIDATED`
 applies only to the bootstrap/orchestration distribution. A future adopting
-project runs `install-project.sh <repo>`, derives runtime from that inspected
+project runs `paseo-workflow project inspect <repo>`, derives runtime from that inspected
 repository, and performs project-specific validation locally.

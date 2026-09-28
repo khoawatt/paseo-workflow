@@ -8,17 +8,23 @@ permissions:
   contents: read
 
 jobs:
-  fixture-tests:
+  node-cli:
+    strategy:
+      matrix:
+        node: ["24.21.0", "26"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install test dependencies
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - name: Install compatibility-test tools
         run: sudo apt-get update && sudo apt-get install -y jq ripgrep
-      - name: Check shell syntax
-        run: find . -type f -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -n1 bash -n
-      - name: Check JSON fixtures and policy
-        run: find policy tests/fixtures -type f -name '*.json' -print0 | xargs -0 -n1 jq empty
-      - name: Run isolated fixture suite
-        run: bash tests/test.sh
+      - run: npm ci
+      - name: Check thin shell wrappers
+        run: bash -n bootstrap.sh install.sh verify.sh install-project.sh bin/reconcile-config
+      - name: Typecheck, validate policy, and test
+        run: npm run check
       - name: Check whitespace
         run: git diff --check

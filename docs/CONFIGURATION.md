@@ -3,6 +3,10 @@
 The implementation follows [field-level ownership](architecture/config-ownership.md)
 and never replaces the full user config with a golden file.
 
+`src/config/reconcile.ts` is a deterministic pure TypeScript engine. Policy
+remains external JSON under `policy/`; unknown and user-owned fields survive
+unless they conflict with an explicitly repository-owned path.
+
 ## Repository-owned
 
 - `daemon.mcp.enabled` and `daemon.mcp.injectIntoAgents`.
