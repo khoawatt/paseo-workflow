@@ -66,6 +66,13 @@ No custom workflow controller, agent runtime, provider router, message bus,
 workspace/worktree manager, permission queue, scheduler, or authentication
 collector is implemented here. Native Paseo capabilities remain authoritative.
 
+## Collaboration
+
+Propose changes from a focused branch and open a pull request against `main`.
+Follow [Contributing](CONTRIBUTING.md), keep evidence labels distinct, and
+preserve co-authorship with `Co-authored-by` trailers so GitHub attributes
+every contributor on the merged commits.
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE).
