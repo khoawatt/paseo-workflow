@@ -99,6 +99,31 @@ assert_eq '1' "$rollback_status" 'reload failure returns BLOCKED/nonzero'
 assert_eq "$rollback_sha" "$(sha256sum "$rollback_home/.paseo/config.json" | awk '{print $1}')" \
   'reload failure restores the exact original config'
 
+validation_home="$TEMP_ROOT/validation-failure"
+mkdir -p "$validation_home/.paseo"
+cp "$ROOT_DIR/tests/fixtures/config/existing.json" "$validation_home/.paseo/config.json"
+validation_sha="$(sha256sum "$validation_home/.paseo/config.json" | awk '{print $1}')"
+set +e
+FAKE_HEALTHY=1 FAKE_VALIDATE_FAIL=1 run_install "$validation_home" >/dev/null 2>&1
+validation_status=$?
+set -e
+assert_eq '1' "$validation_status" 'candidate validation failure returns BLOCKED/nonzero'
+assert_eq "$validation_sha" "$(sha256sum "$validation_home/.paseo/config.json" | awk '{print $1}')" \
+  'candidate validation failure never changes the live config'
+assert_eq '0' "$(find "$validation_home/.paseo" -maxdepth 1 -name 'config.json.backup-bootstrap-*' | wc -l)" \
+  'candidate validation failure creates no unnecessary backup'
+
+invalid_config_home="$TEMP_ROOT/invalid-config"
+mkdir -p "$invalid_config_home/.paseo"
+printf '{invalid\n' >"$invalid_config_home/.paseo/config.json"
+set +e
+FAKE_HEALTHY=1 run_install "$invalid_config_home" >/dev/null 2>&1
+invalid_config_status=$?
+set -e
+assert_eq '2' "$invalid_config_status" 'invalid existing config preserves usage/config exit status 2'
+assert_eq '{invalid' "$(tr -d '\n' <"$invalid_config_home/.paseo/config.json")" \
+  'invalid existing config is never modified'
+
 missing_provider_home="$TEMP_ROOT/missing-provider"
 set +e
 FAKE_CODEX_DIAGNOSTIC_STATE=missing run_install "$missing_provider_home" \
@@ -149,6 +174,16 @@ if [[ -f "$newer_home/state/calls.log" ]] && rg -q '^npm ' "$newer_home/state/ca
   fail 'newer Paseo is never downgraded automatically'
 else
   TESTS_RUN=$((TESTS_RUN + 1)); pass 'newer Paseo is never downgraded automatically'
+fi
+
+dry_home="$TEMP_ROOT/dry-run"
+FAKE_HEALTHY=1 run_install "$dry_home" --dry-run >/dev/null || fail 'dry-run assessment succeeds'
+assert_eq 'false' "$([[ -e "$dry_home/.paseo/config.json" ]] && printf true || printf false)" \
+  'dry-run writes no live config'
+if rg -q 'daemon start|^npm |^npx ' "$dry_home/state/calls.log"; then
+  fail 'dry-run does not install tools or start a daemon'
+else
+  TESTS_RUN=$((TESTS_RUN + 1)); pass 'dry-run does not install tools or start a daemon'
 fi
 
 finish_tests

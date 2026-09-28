@@ -8,8 +8,9 @@ architecture decision.
 Before submitting a change:
 
 ```bash
-bash -n install.sh verify.sh install-project.sh bin/reconcile-config
-bash tests/test.sh
+npm ci
+npm run check
+bash -n bootstrap.sh install.sh verify.sh install-project.sh bin/reconcile-config
 git diff --check
 ```
 

@@ -1,7 +1,7 @@
 # Paseo Workflow
 
-Reproducible WSL2 Ubuntu bootstrap for the existing Design Agent Team V0.2
-architecture. Paseo remains the orchestration runtime; this repository only
+Reproducible Node.js/TypeScript CLI for bootstrapping the existing Design Agent
+Team V0.2 architecture on WSL2 Ubuntu. Paseo remains the orchestration runtime; this repository only
 reconciles the host policy, Agent Profiles, and native Paseo skills required to
 run that architecture.
 
@@ -10,17 +10,22 @@ authenticate both CLIs on the WSL host before running the bootstrap;
 `paseo-workflow` detects and verifies them but never installs, upgrades, or
 replaces them.
 
+The production baseline is Node.js 24 LTS (24.21.0 or newer). CI also tests
+Node.js 26 Current. Application logic uses native TypeScript type stripping,
+so no runtime transpiler or bundler is required.
+
 ## Quick start
 
 ```bash
 git clone https://github.com/khoawatt/paseo-workflow.git
 cd paseo-workflow
-bash install.sh
+npm ci
+node src/cli.ts install
 ```
 
 The installer checks WSL/Ubuntu, installs the pinned supported Paseo CLI when
 needed, preserves user-owned configuration, backs up a changed live config,
-writes atomically, reloads the selected daemon, and runs `verify.sh`. “Fresh
+writes atomically, reloads the selected daemon, and runs the Node verifier. “Fresh
 host” means a fresh WSL Ubuntu Paseo host whose documented external Codex and
 OpenCode prerequisites have already been satisfied by the user.
 
@@ -41,14 +46,19 @@ project-runtime validation.
 ## Commands
 
 ```bash
-bash install.sh --dry-run
-bash install.sh
-bash verify.sh
-bash tests/test.sh
-bash install-project.sh /path/to/repository
+node src/cli.ts install --dry-run
+node src/cli.ts install
+node src/cli.ts verify
+node src/cli.ts verify --json
+node src/cli.ts project inspect /path/to/repository
+npm run check
 ```
 
-`install-project.sh` is read-only in V1. It reports an existing `paseo.json` or
+The package exposes the same commands as the `paseo-workflow` bin when installed
+or linked. The legacy script names are thin compatibility wrappers;
+`bootstrap.sh` only checks the Node baseline and transfers control to the CLI.
+
+`project inspect` is read-only in V1. It reports an existing `paseo.json` or
 literal commands found in real manifests; it never invents project scripts,
 ports, services, or lifecycle hooks.
 

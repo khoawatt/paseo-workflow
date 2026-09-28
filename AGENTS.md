@@ -37,7 +37,8 @@ session IDs, cookies, private keys, or unsanitized runtime records.
 
 ## Supported bootstrap target
 
-V1 supports WSL2 Ubuntu with Bash, `apt`, Node.js/npm, and Paseo. The user must
+V1 supports WSL2 Ubuntu with Node.js 24.21.0 or newer, npm, and Paseo. Bash is
+limited to the optional bootstrap and compatibility wrappers. The user must
 first install and authenticate the external Codex and OpenCode CLIs on the
 daemon host. The bootstrap only preflights these runtimes and never installs,
 updates, or replaces them. macOS and native Linux are intentionally out of
@@ -46,13 +47,14 @@ scope.
 From a fresh clone:
 
 ```bash
-bash install.sh --dry-run
-bash install.sh
-bash verify.sh
+npm ci
+node src/cli.ts install --dry-run
+node src/cli.ts install
+node src/cli.ts verify
 ```
 
 Authentication is human-controlled. If the result is `AUTH_REQUIRED`, follow
-the provider's native login flow, then rerun `bash verify.sh`. Never collect or
+the provider's native login flow, then rerun `node src/cli.ts verify`. Never collect or
 write credentials into this repository. A missing provider binary is
 `BLOCKED`, with an external installation/PATH action rather than an attempted
 automatic install.
@@ -97,7 +99,7 @@ that did not actually occur.
 
 ## Safe configuration workflow
 
-`install.sh` inspects before mutation, builds and natively validates a candidate,
+The Node `install` command inspects before mutation, builds and natively validates a candidate,
 and performs an ownership-aware merge. A changed config is copied to
 `~/.paseo/config.json.backup-bootstrap-<UTC>` with mode 0600. The candidate is
 written with a same-directory atomic rename, the live daemon is reloaded, and
@@ -111,8 +113,8 @@ broader-than-expected host diff without human approval.
 ## Verification and evidence
 
 ```bash
-bash tests/test.sh          # repository fixture tests only
-bash verify.sh --json      # selected live host, structural/runtime checks
+npm run check                  # typecheck plus Node and compatibility fixtures
+node src/cli.ts verify --json  # selected live host, structural/runtime checks
 ```
 
 Keep these evidence labels distinct: `implemented`, `fixture-tested`,
@@ -136,7 +138,7 @@ orchestration distribution.
 
 ## Project runtime
 
-Run `bash install-project.sh <repo>`. V1 never writes `paseo.json`. It returns
+Run `node src/cli.ts project inspect <repo>`. V1 never writes `paseo.json`. It returns
 `PROJECT_RUNTIME_READY`, `PROJECT_RUNTIME_PENDING`, or `BLOCKED` based on the
 actual repository. Human-review any proposed setup, teardown, service, command,
 and port before adding project runtime configuration. Project-specific

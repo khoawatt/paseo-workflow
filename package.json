@@ -1,0 +1,24 @@
+{
+  "name": "paseo-workflow",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "paseo-workflow": "./src/cli.ts"
+  },
+  "engines": {
+    "node": ">=24.21.0 <27"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:node": "node --test tests-node/*.test.ts",
+    "test:legacy": "bash tests/test.sh",
+    "test": "npm run test:node && npm run test:legacy",
+    "validate:json": "node scripts/validate-json.ts",
+    "check": "npm run typecheck && npm run validate:json && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  }
+}
