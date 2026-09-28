@@ -5,6 +5,7 @@ import { verifyCommand } from "./commands/verify.ts";
 import { installCommand } from "./commands/install.ts";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { realpathSync } from "node:fs";
 import { CliError } from "./domain/types.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -27,7 +28,12 @@ export async function main(args = process.argv.slice(2)): Promise<number> {
   return 2;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isMainEntrypoint(): boolean {
+  try { return process.argv[1] !== undefined && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url); }
+  catch { return false; }
+}
+
+if (isMainEntrypoint()) {
   try { process.exitCode = await main(); }
   catch (error) {
     const message = error instanceof Error ? error.message : String(error);
