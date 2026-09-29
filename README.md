@@ -72,7 +72,7 @@ The accepted specification is
 Phase 1 task-depth, scope, evidence, and human commitment policy is in
 [Governance](docs/GOVERNANCE.md), with an adaptive
 [task contract](docs/templates/task-contract.md) and
-[behavioral eval cases](docs/evals/phase-1-governance.md).
+[behavioral evaluation specification](docs/evals/behavioral-evaluation-spec.md).
 
 ## Non-goals
 
