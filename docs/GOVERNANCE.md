@@ -168,9 +168,10 @@ exact final implementation state must receive a fresh independent Reviewer
 `ACCEPT` before the Lead reports `DONE`. A worker's success report is not a
 substitute for inspecting its scope, changes, and combined verification.
 
-Use [Phase 1 behavioral evals](evals/phase-1-governance.md) to test these policy
-behaviors. Historical AI OS results are provenance only and never establish a
-current PASS.
+Use the [behavioral evaluation specification](evals/behavioral-evaluation-spec.md)
+to test these policy behaviors. Historical AI OS results and static regression
+fixtures are calibration or provenance only and never establish a current
+`PASS`.
 
 ## Feedback loop
 
