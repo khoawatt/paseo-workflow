@@ -5,6 +5,11 @@ invariants. Do not introduce a custom orchestration controller or rebuild a
 native Paseo capability without measured runtime evidence and an explicit
 architecture decision.
 
+For meaningful work, follow the canonical
+[Phase 1 governance policy](docs/GOVERNANCE.md) and its
+[adaptive task contract](docs/templates/task-contract.md). Do not duplicate or
+weaken those rules in contribution-specific instructions.
+
 Before submitting a change:
 
 ```bash

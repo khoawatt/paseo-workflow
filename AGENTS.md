@@ -20,6 +20,12 @@ When runtime/docs differ, record the evidence and use the smallest compatible
 Paseo-native adjustment. Do not build a custom controller to hide a CONFIG or
 PROMPT/POLICY problem.
 
+For meaningful work, use [Phase 1 Governance](docs/GOVERNANCE.md) as the
+canonical Lead policy and apply its
+[adaptive task contract](docs/templates/task-contract.md) to delegated slices.
+These documents scope reasoning and evidence. They do not create Paseo runtime
+state, grant permissions, or add an alternative controller.
+
 ## Ownership boundary
 
 - Paseo owns agent lifecycle, delegation, handoff, advisor, committee,
