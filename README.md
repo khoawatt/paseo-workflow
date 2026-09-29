@@ -69,6 +69,10 @@ Start with [AGENTS.md](AGENTS.md). Detailed guidance is in
 are covered by [OpenCode Provider Compatibility](docs/OPENCODE_COMPATIBILITY.md).
 The accepted specification is
 [Bootstrap V1](docs/specs/2026-09-24-paseo-workflow-bootstrap-v1.md).
+Phase 1 task-depth, scope, evidence, and human commitment policy is in
+[Governance](docs/GOVERNANCE.md), with an adaptive
+[task contract](docs/templates/task-contract.md) and
+[behavioral eval cases](docs/evals/phase-1-governance.md).
 
 ## Non-goals
 
