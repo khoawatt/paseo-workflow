@@ -1,7 +1,7 @@
 # Paseo Workflow
 
 Reproducible Node.js/TypeScript CLI for bootstrapping the existing Design Agent
-Team V0.2 architecture on WSL2 Ubuntu. Paseo remains the orchestration runtime; this repository only
+Team V0.2 architecture on WSL2 Ubuntu. Paseo remains the orchestration runtime. This repository only
 reconciles the host policy, Agent Profiles, and native Paseo skills required to
 run that architecture.
 
