@@ -73,6 +73,9 @@ Phase 1 task-depth, scope, evidence, and human commitment policy is in
 [Governance](docs/GOVERNANCE.md), with an adaptive
 [task contract](docs/templates/task-contract.md) and
 [behavioral evaluation specification](docs/evals/behavioral-evaluation-spec.md).
+Behavioral findings use the canonical
+[failure taxonomy](docs/evals/failure-taxonomy.md) and
+[recovery playbooks](docs/evals/recovery-playbooks.md).
 
 ## Non-goals
 
