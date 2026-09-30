@@ -173,6 +173,12 @@ to test these policy behaviors. Historical AI OS results and static regression
 fixtures are calibration or provenance only and never establish a current
 `PASS`.
 
+When a failure or unexpected result needs diagnosis, use the
+[layered debugging methodology](methodologies/layered-debugging.md) to separate
+the observed symptom, current evidence, existing classification, and smallest
+authorized correction. A hypothesis, historical result, or successful retry is
+not a root issue or closure evidence by itself.
+
 ## Feedback loop
 
 Capture recurring corrections, escaped defects, ambiguous contracts, missing

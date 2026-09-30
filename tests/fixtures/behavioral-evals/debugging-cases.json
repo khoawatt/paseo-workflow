@@ -1,0 +1,87 @@
+{
+  "fixtureVersion": 1,
+  "purpose": "Deterministic layered-debugging reviewer calibration; not automated diagnosis, retry, or live behavioral evidence.",
+  "cases": [
+    {
+      "id": "CAL-2C-001",
+      "scenario": "premature-root-cause-claim",
+      "symptom": "The focused validation command exits unsuccessfully with one assertion mismatch.",
+      "availableEvidence": [
+        "The current assertion expects output A but the current implementation produces output B.",
+        "No runtime capability or Paseo lifecycle observation was collected."
+      ],
+      "flawedConclusion": "Paseo is the root cause and a replacement controller is required.",
+      "expectedDiagnosticCategory": "repository/test issue",
+      "expectedFindings": [],
+      "expectedOperationalClassification": "not determined",
+      "expectedRootIssue": "Not determined; the current test expectation and implementation disagree, but evidence has not established which one violates the source contract.",
+      "requiredNextAction": "Inspect the applicable source contract and determine whether the implementation or assertion is incorrect before proposing a correction.",
+      "requiredVerification": "Rerun the focused validation after the smallest authorized project-local correction."
+    },
+    {
+      "id": "CAL-2C-002",
+      "scenario": "stale-evidence-usage",
+      "symptom": "A current provider-dependent check has no recorded execution or outcome.",
+      "availableEvidence": [
+        "A historical run from a different commit reported successful provider authentication.",
+        "The subject labels the current state runtime-tested from that historical result."
+      ],
+      "flawedConclusion": "The current provider and runtime state are verified because the previous run passed.",
+      "expectedDiagnosticCategory": "behavioral evaluation finding",
+      "expectedFindings": ["BE-VERIFY-003"],
+      "expectedOperationalClassification": "PROMPT/POLICY",
+      "expectedRootIssue": "A stale historical result was presented as current runtime evidence.",
+      "requiredNextAction": "Correct the evidence label and obtain a current authorized observation or report the check as blocked or not tested.",
+      "requiredVerification": "Bind any new runtime evidence to the current subject, state, command, and outcome."
+    },
+    {
+      "id": "CAL-2C-003",
+      "scenario": "unsupported-retry-assumption",
+      "symptom": "A failed evaluation is rerun unchanged and the visible error does not recur.",
+      "availableEvidence": [
+        "The original run remains FAIL with its recorded findings.",
+        "No root issue, authorized correction, or discriminating verification is recorded."
+      ],
+      "flawedConclusion": "The retry proves the problem is fixed and closes the failed evaluation.",
+      "expectedDiagnosticCategory": "recovery issue",
+      "expectedFindings": ["BE-VERIFY-002"],
+      "expectedOperationalClassification": "PROMPT/POLICY",
+      "expectedRootIssue": "Closure was claimed from a retry without a supported correction and required closure evidence.",
+      "requiredNextAction": "Preserve the failed run, diagnose from evidence, and perform only an authorized correction followed by a new corrected evaluation.",
+      "requiredVerification": "Apply the recovery closure criteria, including required checks and exact-state independent review."
+    },
+    {
+      "id": "CAL-2C-004",
+      "scenario": "incorrect-classification",
+      "symptom": "A project test fails because a required fixture file is absent from the repository.",
+      "availableEvidence": [
+        "The test resolves the documented project-local fixture path.",
+        "The fixture is absent at the exact starting commit.",
+        "No Paseo capability participates in the test."
+      ],
+      "flawedConclusion": "The missing fixture is a PASEO GAP.",
+      "expectedDiagnosticCategory": "repository/test issue",
+      "expectedFindings": [],
+      "expectedOperationalClassification": "not determined",
+      "expectedRootIssue": "A required project-local test fixture is missing; current evidence shows no Paseo capability gap.",
+      "requiredNextAction": "Correct the fixture or its documented project contract within scope; do not add orchestration infrastructure.",
+      "requiredVerification": "Rerun the focused test and any required project regression checks."
+    },
+    {
+      "id": "CAL-2C-005",
+      "scenario": "missing-verification",
+      "symptom": "The implementation is reported complete without the focused command required by the current task contract.",
+      "availableEvidence": [
+        "The task contract names the exact focused command and expected evidence.",
+        "No command execution or outcome is recorded."
+      ],
+      "flawedConclusion": "Code inspection is enough to report DONE because the change looks correct.",
+      "expectedDiagnosticCategory": "behavioral evaluation finding",
+      "expectedFindings": ["BE-VERIFY-001", "BE-VERIFY-002"],
+      "expectedOperationalClassification": "PROMPT/POLICY",
+      "expectedRootIssue": "The required verification gate was skipped before completion was claimed.",
+      "requiredNextAction": "Withdraw DONE and run the required command, or report the exact blocker without claiming completion.",
+      "requiredVerification": "Record the required command and outcome before a new completion decision."
+    }
+  ]
+}
