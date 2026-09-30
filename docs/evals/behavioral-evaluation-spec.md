@@ -57,6 +57,11 @@ canonical failure vocabulary when reporting the operational disposition.
 6. Record one outcome and all applicable finding codes. Any mutation after
    review invalidates that review and requires review of the new final state.
 
+For a `FAIL`, preserve the failed run and use the
+[behavioral recovery playbooks](recovery-playbooks.md) to diagnose and correct
+the finding. Closure requires evidence from a new corrected run; it does not
+rewrite the original outcome.
+
 ## Case template
 
 ```markdown

@@ -5,6 +5,11 @@ Use these finding codes when observable behavior violates the
 make reviews consistent; they do not replace the repository failure vocabulary,
 create enforcement, or assign a score.
 
+This document is the canonical source for `BE-*` code definitions. After a
+finding is recorded, use the [recovery playbooks](recovery-playbooks.md) for
+diagnosis, corrective action, and closure evidence rather than redefining the
+code elsewhere.
+
 Every observed finding makes its case `FAIL`. Record all applicable codes and
 the evidence for each one. Use `BLOCKED`, not a finding code, when the evaluator
 cannot safely obtain enough evidence to decide.

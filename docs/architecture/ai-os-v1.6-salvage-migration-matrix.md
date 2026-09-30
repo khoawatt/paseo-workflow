@@ -203,7 +203,7 @@ Human
 | `harness-core/docs/harness/skills/tdd/SKILL.md` | **MERGE** | P1 | ai-agent/methodologies/superpowers.md + ai-agent/harness/agent-skills.md | Useful methodology, but substantially overlaps Superpowers; consolidate instead of creating duplicate skills. |
 | `harness-core/docs/runbooks/README.md` | **ARCHIVE** | P2 | No active target | Old runbook index. |
 | `harness-core/docs/runbooks/agent-harness.md` | **MERGE** | P1 | ai-agent/harness/agent-skills.md + how-to-design-agent-team | Useful harness mental model; avoid recreating the old harness directory/runtime. |
-| `harness-core/docs/runbooks/ai-debugging.md` | **EXTRACT** | P1 | ai-agent/methodologies or workflow debugging guide | Layered failure classification is reusable across agent systems and complements Paseo failure classes. |
+| `harness-core/docs/runbooks/ai-debugging.md` | **EXTRACT** | P1 | [behavioral recovery playbooks](../evals/recovery-playbooks.md) | Layered failure classification is reusable across agent systems and complements Paseo failure classes. |
 | `harness-core/docs/runbooks/always-on-agents.md` | **MERGE** | P2 | paseo-orchestration-design-v0.2.md schedules/heartbeats/resident-role guidance | Keep only criteria for resident/recurring roles; Paseo Schedule/Heartbeat already owns execution. |
 | `harness-core/docs/runbooks/component-style-packaging.md` | **EXTRACT** | P1 | ai-agent/harness reusable component-packaging skill/reference | Reusable design-system packaging guidance; independent of old orchestration. |
 | `harness-core/docs/runbooks/content-automation.md` | **ARCHIVE** | P2 | Optional future workflow knowledge | Generic content workflow is not central to current Design Agent Team/Paseo engineering architecture. |
@@ -235,7 +235,7 @@ Human
 | `harness-core/docs/templates/code-review.md` | **MERGE** | P1 | paseo-report-contract-v0.2.md / Review profile | Keep evidence/severity/action structure if not already covered. |
 | `harness-core/docs/templates/command.md` | **ARCHIVE** | P2 | No active target | Generic old template; migrate only if a current workflow demonstrates a need. |
 | `harness-core/docs/templates/component-pattern.md` | **EXTRACT** | P1 | component-packaging skill/reference | Useful companion template for reusable design patterns. |
-| `harness-core/docs/templates/debug-report.md` | **MERGE** | P1 | future AI debugging guide | Useful evidence shape for repeatable failure analysis. |
+| `harness-core/docs/templates/debug-report.md` | **MERGE** | P1 | [behavioral recovery playbooks](../evals/recovery-playbooks.md) | Useful evidence shape for repeatable failure analysis. |
 | `harness-core/docs/templates/eval-case.md` | **EXTRACT** | P0 | [behavioral evaluation specification](../evals/behavioral-evaluation-spec.md) | Small reusable template for regression/adversarial agent behavior tests. |
 | `harness-core/docs/templates/feedback-log.md` | **MERGE** | P1 | future feedback/eval loop | Small learning record pattern; can be represented in existing docs/issues instead of copied verbatim. |
 | `harness-core/docs/templates/frontend-browser-scenario.json` | **EXTRACT** | P1 | future project QA utility | Companion scenario format for frontend browser verification. |

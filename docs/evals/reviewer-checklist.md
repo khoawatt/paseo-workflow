@@ -43,6 +43,15 @@ does not automate judgment or grant approval authority.
   triggered a new review of the final state.
 - [ ] Skipped checks and residual uncertainty are explicit.
 
+For a `FAIL`, use the [recovery playbooks](recovery-playbooks.md) and confirm:
+
+- [ ] The failed run and its finding codes remain recorded.
+- [ ] Diagnosis identifies an observable root issue rather than assuming one.
+- [ ] The correction stays inside existing authority and scope, or approved
+  rescoping is explicit.
+- [ ] Closure is based on a new corrected run with required verification and
+  exact-state independent review, not on a promise or retry alone.
+
 Reviewer decision:
 
 ```text
