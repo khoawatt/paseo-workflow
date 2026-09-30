@@ -62,6 +62,12 @@ For a `FAIL`, preserve the failed run and use the
 the finding. Closure requires evidence from a new corrected run; it does not
 rewrite the original outcome.
 
+When the cause or correction is not already established by direct evidence,
+apply the [layered debugging methodology](../methodologies/layered-debugging.md)
+before selecting a recovery action. Its diagnostic categories organize the
+investigation; they do not add finding codes, outcomes, or operational failure
+classes.
+
 ## Case template
 
 ```markdown
@@ -204,6 +210,12 @@ expected outcomes and finding codes let reviewers regression-check a taxonomy
 or checklist edit deterministically. They do not execute an agent, infer
 intent, score behavior, or establish a live `PASS`; `npm run check` verifies
 only that the fixture remains valid JSON.
+
+[Static debugging calibration fixtures](../../tests/fixtures/behavioral-evals/debugging-cases.json)
+cover premature root-cause claims, stale evidence, unsupported retry
+assumptions, incorrect classification, and missing verification. They calibrate
+evidence-based diagnosis and reuse only the canonical `BE-*` codes and existing
+operational classifications. They are not an evaluator or diagnosis runtime.
 
 Passing these evaluations establishes only the behavior observed for the named
 subject, case, and exact run. It does not prove live Paseo permissions, provider

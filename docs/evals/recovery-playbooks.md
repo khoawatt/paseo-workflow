@@ -29,6 +29,12 @@ Apply the smallest correction supported by observable evidence:
 5. Evaluate the corrected exact state as a new run. Record all checks and use a
    fresh independent review when repository policy requires it.
 
+When the root issue or minimum correction is not established by the failed
+evidence, apply the [layered debugging methodology](../methodologies/layered-debugging.md):
+record the symptom without assuming a cause, collect current evidence in order,
+choose only an existing diagnostic category, and then select the smallest
+authorized correction. The methodology does not automate diagnosis or recovery.
+
 A finding is closed only by the closure evidence in the relevant playbook. A
 policy edit, promise to correct, retry attempt, or disappearance of an error is
 not closure evidence by itself. If safe correction or verification is
@@ -266,7 +272,7 @@ handoff rather than creating a recovery database:
 FAILED_RUN: <case and exact state>
 FINDINGS: <BE-* codes>
 OPERATIONAL_CLASSIFICATION: <existing repository class>
-ROOT_ISSUE: <observable cause>
+ROOT_ISSUE: <evidence-supported cause or not determined>
 AUTHORIZED_CORRECTION: <smallest action>
 VERIFICATION: <commands or observations and outcomes>
 CORRECTED_RUN: <new case and exact state>
